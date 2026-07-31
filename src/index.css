@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { font-family: 'Vazirmatn', sans-serif; }
+.mono { font-family: 'IBM Plex Mono', monospace; }
+body { background: #161F1A; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #354238; border-radius: 8px; }
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+}
