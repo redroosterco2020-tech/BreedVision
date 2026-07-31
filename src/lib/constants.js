@@ -1,49 +1,56 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import { auth } from "../firebase.js";
+export const GOALS = [
+  { id: "weight", label: "افزایش وزن", field: "weight", icon: "⚖️" },
+  { id: "egg", label: "افزایش تولید تخم", field: "eggProduction", icon: "🥚" },
+  { id: "resistance", label: "افزایش مقاومت", field: "resistanceScore", icon: "🛡️" },
+  { id: "fcr", label: "کاهش FCR", field: "fcr", icon: "🌾", inverse: true },
+  { id: "hatch", label: "افزایش درصد هچ", field: "hatchPercent", icon: "🐣" },
+  { id: "lifespan", label: "افزایش طول عمر تولید", field: "productiveLifespanMonths", icon: "⏳" },
+];
 
-const AuthContext = createContext(null);
+export const TRAIT_META = {
+  weight: { label: "وزن (کیلوگرم)", inverse: false, h2: 0.35 },
+  eggProduction: { label: "تولید تخم (فرد در سال)", inverse: false, h2: 0.25 },
+  resistanceScore: { label: "امتیاز مقاومت", inverse: false, h2: 0.2 },
+  fcr: { label: "FCR", inverse: true, h2: 0.3 },
+  hatchPercent: { label: "درصد هچ", inverse: false, h2: 0.2 },
+  productiveLifespanMonths: { label: "طول عمر تولید (ماه)", inverse: false, h2: 0.15 },
+};
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const emptyBreeder = () => ({
+  id: "",
+  tag: "",
+  name: "",
+  sex: "female",
+  breed: "",
+  birthDate: "",
+  active: true,
+  sireId: "",
+  damId: "",
+  weight: "",
+  eggProduction: "",
+  hatchPercent: "",
+  fcr: "",
+  resistanceScore: "",
+  productiveLifespanMonths: "",
+  mortality: false,
+  mortalityDate: "",
+  weightHistory: [],
+  notes: "",
+});
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-      setLoading(false);
-    });
-    return unsub;
-  }, []);
-
-  async function login(email, password) {
-    await signInWithEmailAndPassword(auth, email, password);
-  }
-
-  async function signup(email, password, displayName) {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    if (displayName) {
-      await updateProfile(cred.user, { displayName });
-    }
-  }
-
-  async function logout() {
-    await signOut(auth);
-  }
-
-  return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+export function uid() {
+  return "b" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-    }
+export function ageInMonths(birthDate) {
+  if (!birthDate) return null;
+  const b = new Date(birthDate);
+  if (isNaN(b.getTime())) return null;
+  const now = new Date();
+  return Math.max(0, Math.round((now - b) / (1000 * 60 * 60 * 24 * 30.44)));
+}
+
+export function fmt(n, digits = 2) {
+  if (n === null || n === undefined || n === "" || isNaN(n)) return "—";
+  return Number(n).toLocaleString("fa-IR", { maximumFractionDigits: digits });
+                                             }
