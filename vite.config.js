@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["icons/icon-192.png", "icons/icon-512.png"],
       manifest: {
-        name: "فلاک‌لاین — مدیریت اصلاح نژاد طیور",
-        short_name: "breedvision",
+        name: "BreedVision — مدیریت اصلاح نژاد طیور",
+        short_name: "BreedVision",
         description: "سامانه مدیریت مولدها، شجره‌نامه و اصلاح نژاد ژنتیکی طیور",
         theme_color: "#0D1B2A",
         background_color: "#0D1B2A",
