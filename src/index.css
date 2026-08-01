@@ -5,9 +5,9 @@
 
 * { font-family: 'Vazirmatn', sans-serif; }
 .mono { font-family: 'IBM Plex Mono', monospace; }
-body { background: #161F1A; }
+body { background: #0D1B2A; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-thumb { background: #354238; border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: #24425E; border-radius: 8px; }
 @media print {
   .no-print { display: none !important; }
   body { background: white; }
