@@ -22,7 +22,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">{breeder.id ? "ویرایش مولد" : "افزودن مولد جدید"}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#2A362F]">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#1B3349]">
             <X size={18} />
           </button>
         </div>
@@ -94,11 +94,11 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
         </div>
 
         <div className="mt-5">
-          <div className="text-[#E8A33D] text-[11px] tracking-[0.2em] font-semibold mb-1">WEIGHT LOG · تاریخچه وزن</div>
+          <div className="text-[#6FA83E] text-[11px] tracking-[0.2em] font-semibold mb-1">WEIGHT LOG · تاریخچه وزن</div>
           <div className="flex gap-2 mt-2">
             <input type="date" className={inputCls} value={newWeightDate} onChange={(e) => setNewWeightDate(e.target.value)} />
             <input type="number" step="0.01" placeholder="وزن (kg)" className={inputCls} value={newWeightVal} onChange={(e) => setNewWeightVal(e.target.value)} />
-            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[#2A362F] text-[#E8A33D] text-sm">افزودن</button>
+            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[#1B3349] text-[#6FA83E] text-sm">افزودن</button>
           </div>
           {(form.weightHistory || []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -114,10 +114,10 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
         </Field>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-[#9FB3A5] hover:bg-[#2A362F]">انصراف</button>
-          <button onClick={() => onSave(form)} className="px-4 py-2 rounded-xl text-sm bg-[#E8A33D] text-[#1B2420] font-bold">ذخیره مولد</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-[#9DB4C7] hover:bg-[#1B3349]">انصراف</button>
+          <button onClick={() => onSave(form)} className="px-4 py-2 rounded-xl text-sm bg-[#6FA83E] text-[#0A1622] font-bold">ذخیره مولد</button>
         </div>
       </Card>
     </div>
   );
-}
+          }
