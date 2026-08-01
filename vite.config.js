@@ -10,10 +10,10 @@ export default defineConfig({
       includeAssets: ["icons/icon-192.png", "icons/icon-512.png"],
       manifest: {
         name: "فلاک‌لاین — مدیریت اصلاح نژاد طیور",
-        short_name: "فلاک‌لاین",
+        short_name: "breedvision",
         description: "سامانه مدیریت مولدها، شجره‌نامه و اصلاح نژاد ژنتیکی طیور",
-        theme_color: "#161F1A",
-        background_color: "#161F1A",
+        theme_color: "#0D1B2A",
+        background_color: "#0D1B2A",
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
