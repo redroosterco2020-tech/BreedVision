@@ -1,12 +1,12 @@
 import React, { useState, useMemo } from "react";
 import {
-  Bird, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
+  PawPrint, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
   LayoutDashboard, FileDown, Dna, LogOut, Menu, X,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useFlockData } from "../lib/useFlockData.js";
-import { emptyBreeder, uid, ageInMonths } from "../lib/constants.js";
+import { emptyBreeder, uid, ageInMonths, SPECIES } from "../lib/constants.js";
 import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import {
@@ -16,7 +16,7 @@ import {
 
 const NAV = [
   { id: "dashboard", label: "داشبورد", icon: LayoutDashboard },
-  { id: "breeders", label: "مولدها", icon: Bird },
+  { id: "breeders", label: "مولدها", icon: PawPrint },
   { id: "pedigree", label: "شجره‌نامه", icon: GitBranch },
   { id: "pairing", label: "انتخاب جفت", icon: Dna },
   { id: "simulation", label: "شبیه‌سازی نسل‌ها", icon: FlaskConical },
@@ -25,6 +25,8 @@ const NAV = [
   { id: "ai", label: "پیشنهاد هوشمند", icon: Sparkles },
   { id: "report", label: "گزارش", icon: FileDown },
 ];
+
+const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
 export default function AppShell() {
   const { user, logout } = useAuth();
@@ -62,7 +64,7 @@ export default function AppShell() {
   function exportExcel() {
     const wb = XLSX.utils.book_new();
     const breederRows = breeders.map((b) => ({
-      "شماره شناسایی": b.tag, "نام": b.name, "جنسیت": b.sex === "male" ? "خروس" : "مرغ",
+      "شماره شناسایی": b.tag, "نام": b.name, "نوع دام": SPECIES_MAP[b.species] || "", "جنسیت": b.sex === "male" ? "نر" : "ماده",
       "نژاد": b.breed, "تاریخ تولد": b.birthDate, "سن (ماه)": ageInMonths(b.birthDate) ?? "",
       "پدر": byId.get(b.sireId)?.tag || "", "مادر": byId.get(b.damId)?.tag || "",
       "وزن (kg)": b.weight, "تولید تخم": b.eggProduction, "درصد هچ": b.hatchPercent, "FCR": b.fcr,
