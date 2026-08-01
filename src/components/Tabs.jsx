@@ -3,11 +3,11 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import {
-  Bird, Pencil, Trash2, Search, Plus, Skull, AlertTriangle, Check, X, Info,
+  PawPrint, Pencil, Trash2, Search, Plus, Skull, AlertTriangle, Check, X, Info,
   ChevronLeft, FileDown,
 } from "lucide-react";
 import { Card, Pill, SectionEyebrow, Field, EmptyHint, inputCls } from "./ui.jsx";
-import { GOALS, TRAIT_META, ageInMonths, fmt } from "../lib/constants.js";
+import { GOALS, TRAIT_META, ageInMonths, fmt, speciesLabel } from "../lib/constants.js";
 import { kinshipCoefficient, pairingScore, simulateGenerations } from "../lib/genetics.js";
 
 /* ---------------- Dashboard ---------------- */
@@ -47,7 +47,7 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
         <StatCard label="تعداد مولدها" value={breeders.length} />
         <StatCard label="میانگین هم‌خونی گله" value={`${(avgInbreeding * 100).toFixed(1)}٪`} tone={avgInbreeding > 0.0625 ? "warn" : "good"} />
         <StatCard label="هشدارهای فعال" value={alerts.length} tone={alerts.length ? "warn" : "good"} />
-        <StatCard label="خروس / مرغ" value={`${breeders.filter((b) => b.sex === "male").length} / ${breeders.filter((b) => b.sex === "female").length}`} />
+        <StatCard label="نر / ماده" value={`${breeders.filter((b) => b.sex === "male").length} / ${breeders.filter((b) => b.sex === "female").length}`} />
       </div>
       {trendData.length > 1 && (
         <Card className="p-5">
@@ -101,7 +101,7 @@ function RankRow({ rank, breeder, score, tone }) {
       <div className="flex items-center gap-2">
         <span className="mono text-[#56707F] text-xs w-4">{rank}</span>
         <span className="text-sm font-medium">{breeder.tag || breeder.name}</span>
-        <span className="text-[11px] text-[#7189A0]">{breeder.sex === "male" ? "خروس" : "مرغ"}</span>
+        <span className="text-[11px] text-[#7189A0]">{breeder.sex === "male" ? "نر" : "ماده"}</span>
       </div>
       <Pill tone={tone}>{(score || 0).toFixed(2)}</Pill>
     </div>
@@ -133,11 +133,11 @@ export function BreedersTab({ breeders, byId, search, setSearch, openNew, openEd
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2.5">
                 <div className={`w-10 h-10 rounded-[45%_55%_55%_45%] flex items-center justify-center ${b.sex === "male" ? "bg-[#16283D] text-[#7FB3E8]" : "bg-[#1F3A2E] text-[#7FD9A8]"}`}>
-                  <Bird size={18} />
+                  <PawPrint size={18} />
                 </div>
                 <div>
                   <div className="font-bold text-sm">{b.tag || "بدون شماره"}</div>
-                  <div className="text-[11px] text-[#7189A0]">{b.name || "—"} · {b.breed || "نژاد نامشخص"}</div>
+                  <div className="text-[11px] text-[#7189A0]">{speciesLabel(b.species)} · {b.breed || "نژاد نامشخص"}</div>
                 </div>
               </div>
               <div className="flex gap-1">
@@ -249,13 +249,13 @@ export function PairingTab({ males, females, byId, goalId, pairSel, setPairSel }
         <h1 className="text-2xl font-extrabold">انتخاب جفت مولد</h1>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Field label="خروس (پدر)">
+        <Field label="نر (پدر)">
           <select className={inputCls} value={pairSel.sireId} onChange={(e) => setPairSel((p) => ({ ...p, sireId: e.target.value }))}>
             <option value="">انتخاب کنید...</option>
             {males.map((m) => <option key={m.id} value={m.id}>{m.tag || m.name}</option>)}
           </select>
         </Field>
-        <Field label="مرغ (مادر)">
+        <Field label="ماده (مادر)">
           <select className={inputCls} value={pairSel.damId} onChange={(e) => setPairSel((p) => ({ ...p, damId: e.target.value }))}>
             <option value="">انتخاب کنید...</option>
             {females.map((f) => <option key={f.id} value={f.id}>{f.tag || f.name}</option>)}
@@ -263,7 +263,7 @@ export function PairingTab({ males, females, byId, goalId, pairSel, setPairSel }
         </Field>
       </div>
       {!sire || !dam ? (
-        <EmptyHint text="یک خروس و یک مرغ را برای محاسبه امتیاز انتخاب کنید." />
+        <EmptyHint text="یک نر و یک ماده را برای محاسبه امتیاز انتخاب کنید." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <ScoreCard icon="⭐" label="سازگاری ژنتیکی" value={score.geneticCompat} tone={score.geneticCompat > 0.7 ? "good" : score.geneticCompat > 0.4 ? "warn" : "bad"} />
@@ -321,13 +321,13 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
         <p className="text-[#9DB4C7] text-sm mt-1 flex items-center gap-1"><Info size={13} /> همه مقادیر برآورد احتمالی و بازه‌ای هستند، نه نتیجه قطعی.</p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Field label="خروس (پدر)">
+        <Field label="نر (پدر)">
           <select className={inputCls} value={pairSel.sireId} onChange={(e) => setPairSel((p) => ({ ...p, sireId: e.target.value }))}>
             <option value="">انتخاب کنید...</option>
             {males.map((m) => <option key={m.id} value={m.id}>{m.tag || m.name}</option>)}
           </select>
         </Field>
-        <Field label="مرغ (مادر)">
+        <Field label="ماده (مادر)">
           <select className={inputCls} value={pairSel.damId} onChange={(e) => setPairSel((p) => ({ ...p, damId: e.target.value }))}>
             <option value="">انتخاب کنید...</option>
             {females.map((f) => <option key={f.id} value={f.id}>{f.tag || f.name}</option>)}
@@ -483,7 +483,7 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
             {breeders.map((b) => (
               <tr key={b.id} className="border-b border-[#142538]">
                 <td className="py-1.5">{b.tag || b.name}</td>
-                <td>{b.sex === "male" ? "خروس" : "مرغ"}</td>
+                <td>{b.sex === "male" ? "نر" : "ماده"}</td>
                 <td className="mono">{fmt(b.weight)}</td>
                 <td className="mono">{fmt(b.eggProduction, 0)}</td>
                 <td className="mono">{fmt(b.fcr)}</td>
@@ -506,4 +506,4 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
       </Card>
     </div>
   );
-      }
+  }
