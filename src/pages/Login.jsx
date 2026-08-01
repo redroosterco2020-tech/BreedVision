@@ -29,9 +29,9 @@ export default function Login() {
     <div dir="rtl" className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-[#13253A] border border-[#1E3A54] rounded-2xl p-7">
         <div className="flex items-center gap-2.5 mb-6">
-          <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-10 h-10 rounded-xl object-cover" />
+          <img src="/icons/icon-192.png" alt="BreedVision" className="w-10 h-10 rounded-xl object-cover" />
           <div>
-            <div className="font-extrabold text-lg leading-none">فلاک‌لاین</div>
+            <div className="font-extrabold text-lg leading-none">BreedVision</div>
             <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
           </div>
         </div>
