@@ -1,3 +1,9 @@
+export const SPECIES = [
+  { id: "poultry", label: "طیور (مرغ و خروس)" },
+  { id: "light_livestock", label: "دام سبک (گوسفند / بز)" },
+  { id: "heavy_livestock", label: "دام سنگین (گاو / گاومیش / شتر)" },
+];
+
 export const GOALS = [
   { id: "weight", label: "افزایش وزن", field: "weight", icon: "⚖️" },
   { id: "egg", label: "افزایش تولید تخم", field: "eggProduction", icon: "🥚" },
@@ -20,6 +26,7 @@ export const emptyBreeder = () => ({
   id: "",
   tag: "",
   name: "",
+  species: "poultry",
   sex: "female",
   breed: "",
   birthDate: "",
@@ -38,6 +45,11 @@ export const emptyBreeder = () => ({
   notes: "",
 });
 
+export function speciesLabel(id) {
+  const s = SPECIES.find((x) => x.id === id);
+  return s ? s.label : "";
+}
+
 export function uid() {
   return "b" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
@@ -53,4 +65,4 @@ export function ageInMonths(birthDate) {
 export function fmt(n, digits = 2) {
   if (n === null || n === undefined || n === "" || isNaN(n)) return "—";
   return Number(n).toLocaleString("fa-IR", { maximumFractionDigits: digits });
-                                             }
+    }
