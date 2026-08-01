@@ -7,7 +7,7 @@ import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useFlockData } from "../lib/useFlockData.js";
 import { emptyBreeder, uid, ageInMonths } from "../lib/constants.js";
-import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
+import { computeSelectionIndex, computeAlerts, computeAiSuggestions, kinshipCoefficient } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import {
   DashboardTab, BreedersTab, PedigreeTab, PairingTab, SimulationTab,
@@ -84,23 +84,23 @@ export default function AppShell() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-[#161F1A] text-[#EDE8DC] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center">
         در حال بارگذاری...
       </div>
     );
   }
 
   return (
-    <div dir="rtl" className="min-h-screen w-full bg-[#161F1A] text-[#EDE8DC]">
+    <div dir="rtl" className="min-h-screen w-full bg-[#0D1B2A] text-[#E7EEF4]">
       <div className="flex min-h-screen">
-        <aside className="no-print w-[220px] shrink-0 bg-[#1B2420] border-l border-[#2A362F] flex flex-col py-6 px-3 gap-1">
+        <aside className="no-print w-[220px] shrink-0 bg-[#0A1622] border-l border-[#1B3349] flex flex-col py-6 px-3 gap-1">
           <div className="flex items-center gap-2 px-3 mb-6">
-            <div className="w-9 h-9 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#E8A33D] to-[#C97A2B] flex items-center justify-center text-[#1B2420] font-extrabold text-lg">
+            <div className="w-9 h-9 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#14263A] to-[#4C7A2E] flex items-center justify-center text-[#E7EEF4] font-extrabold text-lg">
               <Egg size={18} />
             </div>
             <div>
               <div className="font-extrabold text-[15px] leading-none">فلاک‌لاین</div>
-              <div className="text-[10px] text-[#7C9186] mono tracking-wider mt-1">GENETICS · v1.0</div>
+              <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
             </div>
           </div>
           {NAV.map((n) => {
@@ -108,13 +108,13 @@ export default function AppShell() {
             const active = tab === n.id;
             return (
               <button key={n.id} onClick={() => setTab(n.id)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[#2A362F] text-[#E8A33D] font-semibold" : "text-[#B7C7BB] hover:bg-[#212C25]"}`}>
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[#1B3349] text-[#6FA83E] font-semibold" : "text-[#B7C9D6] hover:bg-[#13253A]"}`}>
                 <Icon size={16} />{n.label}
               </button>
             );
           })}
           <div className="mt-auto flex flex-col gap-2">
-            <div className="px-3 text-[10px] text-[#5C6A61] leading-5">
+            <div className="px-3 text-[10px] text-[#56707F] leading-5">
               {user?.email}
               <br />{breeders.length} مولد ثبت‌شده
             </div>
@@ -146,4 +146,4 @@ export default function AppShell() {
       )}
     </div>
   );
-}
+        }
