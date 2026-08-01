@@ -26,19 +26,19 @@ export default function Login() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#161F1A] text-[#EDE8DC] flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-[#212C25] border border-[#31402F] rounded-2xl p-7">
+    <div dir="rtl" className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center p-4">
+      <div className="w-full max-w-sm bg-[#13253A] border border-[#1E3A54] rounded-2xl p-7">
         <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-10 h-10 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#E8A33D] to-[#C97A2B] flex items-center justify-center text-[#1B2420]">
+          <div className="w-10 h-10 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#14263A] to-[#4C7A2E] flex items-center justify-center text-[#E7EEF4]">
             <Egg size={20} />
           </div>
           <div>
             <div className="font-extrabold text-lg leading-none">فلاک‌لاین</div>
-            <div className="text-[10px] text-[#7C9186] mono tracking-wider mt-1">GENETICS · v1.0</div>
+            <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
           </div>
         </div>
         <h1 className="text-xl font-extrabold mb-1">ورود به حساب</h1>
-        <p className="text-[#9FB3A5] text-sm mb-5">برای مدیریت گله خود وارد شوید.</p>
+        <p className="text-[#9DB4C7] text-sm mb-5">برای مدیریت گله خود وارد شوید.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -47,7 +47,7 @@ export default function Login() {
             placeholder="ایمیل"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-[#1A2320] border border-[#354238] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#E8A33D] placeholder:text-[#5C6A61]"
+            className="bg-[#0E2033] border border-[#24425E] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#6FA83E] placeholder:text-[#56707F]"
           />
           <input
             type="password"
@@ -55,21 +55,21 @@ export default function Login() {
             placeholder="رمز عبور"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="bg-[#1A2320] border border-[#354238] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#E8A33D] placeholder:text-[#5C6A61]"
+            className="bg-[#0E2033] border border-[#24425E] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#6FA83E] placeholder:text-[#56707F]"
           />
           {error && <div className="text-[#E88A7A] text-xs">{error}</div>}
           <button
             disabled={busy}
-            className="mt-2 bg-[#E8A33D] text-[#1B2420] font-bold rounded-xl py-2.5 flex items-center justify-center gap-2 disabled:opacity-60"
+            className="mt-2 bg-[#6FA83E] text-[#0A1622] font-bold rounded-xl py-2.5 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy && <Loader2 size={16} className="animate-spin" />}
             ورود
           </button>
         </form>
 
-        <div className="text-center text-sm text-[#9FB3A5] mt-5">
+        <div className="text-center text-sm text-[#9DB4C7] mt-5">
           حساب ندارید؟{" "}
-          <Link to="/signup" className="text-[#E8A33D] font-semibold">
+          <Link to="/signup" className="text-[#6FA83E] font-semibold">
             ثبت‌نام کنید
           </Link>
         </div>
@@ -88,4 +88,4 @@ export function mapAuthError(code) {
     "auth/weak-password": "رمز عبور باید حداقل ۶ کاراکتر باشد.",
   };
   return map[code] || "خطایی رخ داد. دوباره تلاش کنید.";
-}
+            }
