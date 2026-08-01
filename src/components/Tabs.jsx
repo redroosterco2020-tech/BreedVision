@@ -41,7 +41,7 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
       <header>
         <SectionEyebrow>DASHBOARD · نمای کلی</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">داشبورد ژنتیکی گله</h1>
-        <p className="text-[#9FB3A5] text-sm mt-1">هدف اصلاح نژاد فعال: {goal?.icon} {goal?.label}</p>
+        <p className="text-[#9DB4C7] text-sm mt-1">هدف اصلاح نژاد فعال: {goal?.icon} {goal?.label}</p>
       </header>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="تعداد مولدها" value={breeders.length} />
@@ -55,11 +55,11 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
           <div className="h-56 mt-2">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={trendData}>
-                <CartesianGrid stroke="#2A362F" strokeDasharray="3 3" />
-                <XAxis dataKey="month" stroke="#7C9186" fontSize={11} />
-                <YAxis stroke="#7C9186" fontSize={11} />
-                <Tooltip contentStyle={{ background: "#1B2420", border: "1px solid #354238", borderRadius: 8 }} />
-                <Line type="monotone" dataKey="avg" stroke="#E8A33D" strokeWidth={2} dot={{ r: 3 }} name="میانگین وزن" />
+                <CartesianGrid stroke="#1B3349" strokeDasharray="3 3" />
+                <XAxis dataKey="month" stroke="#7189A0" fontSize={11} />
+                <YAxis stroke="#7189A0" fontSize={11} />
+                <Tooltip contentStyle={{ background: "#0A1622", border: "1px solid #24425E", borderRadius: 8 }} />
+                <Line type="monotone" dataKey="avg" stroke="#6FA83E" strokeWidth={2} dot={{ r: 3 }} name="میانگین وزن" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -86,10 +86,10 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
 }
 
 function StatCard({ label, value, tone = "default" }) {
-  const toneColor = tone === "warn" ? "text-[#E8B15D]" : tone === "good" ? "text-[#7FD9A8]" : "text-[#EDE8DC]";
+  const toneColor = tone === "warn" ? "text-[#E8B15D]" : tone === "good" ? "text-[#7FD9A8]" : "text-[#E7EEF4]";
   return (
     <Card className="p-4">
-      <div className="text-[11px] text-[#7C9186]">{label}</div>
+      <div className="text-[11px] text-[#7189A0]">{label}</div>
       <div className={`text-2xl font-extrabold mono mt-1 ${toneColor}`}>{value}</div>
     </Card>
   );
@@ -97,11 +97,11 @@ function StatCard({ label, value, tone = "default" }) {
 
 function RankRow({ rank, breeder, score, tone }) {
   return (
-    <div className="flex items-center justify-between bg-[#1A2320] rounded-lg px-3 py-2">
+    <div className="flex items-center justify-between bg-[#0E2033] rounded-lg px-3 py-2">
       <div className="flex items-center gap-2">
-        <span className="mono text-[#5C6A61] text-xs w-4">{rank}</span>
+        <span className="mono text-[#56707F] text-xs w-4">{rank}</span>
         <span className="text-sm font-medium">{breeder.tag || breeder.name}</span>
-        <span className="text-[11px] text-[#7C9186]">{breeder.sex === "male" ? "خروس" : "مرغ"}</span>
+        <span className="text-[11px] text-[#7189A0]">{breeder.sex === "male" ? "خروس" : "مرغ"}</span>
       </div>
       <Pill tone={tone}>{(score || 0).toFixed(2)}</Pill>
     </div>
@@ -118,12 +118,12 @@ export function BreedersTab({ breeders, byId, search, setSearch, openNew, openEd
           <SectionEyebrow>REGISTRY · ثبت مولدها</SectionEyebrow>
           <h1 className="text-2xl font-extrabold">مدیریت مولدها</h1>
         </div>
-        <button onClick={openNew} className="flex items-center gap-2 bg-[#E8A33D] text-[#1B2420] font-bold px-4 py-2.5 rounded-xl hover:brightness-110 transition">
+        <button onClick={openNew} className="flex items-center gap-2 bg-[#6FA83E] text-[#0A1622] font-bold px-4 py-2.5 rounded-xl hover:brightness-110 transition">
           <Plus size={16} /> افزودن مولد
         </button>
       </header>
       <div className="relative w-full md:w-80">
-        <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5C6A61]" />
+        <Search size={15} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#56707F]" />
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="جستجو با شماره، نام یا نژاد..." className={`${inputCls} w-full pr-9`} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -132,29 +132,29 @@ export function BreedersTab({ breeders, byId, search, setSearch, openNew, openEd
           <Card key={b.id} className="p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-2.5">
-                <div className={`w-10 h-10 rounded-[45%_55%_55%_45%] flex items-center justify-center ${b.sex === "male" ? "bg-[#3A2A10] text-[#E8A33D]" : "bg-[#1F3A2E] text-[#7FD9A8]"}`}>
+                <div className={`w-10 h-10 rounded-[45%_55%_55%_45%] flex items-center justify-center ${b.sex === "male" ? "bg-[#16283D] text-[#7FB3E8]" : "bg-[#1F3A2E] text-[#7FD9A8]"}`}>
                   <Bird size={18} />
                 </div>
                 <div>
                   <div className="font-bold text-sm">{b.tag || "بدون شماره"}</div>
-                  <div className="text-[11px] text-[#7C9186]">{b.name || "—"} · {b.breed || "نژاد نامشخص"}</div>
+                  <div className="text-[11px] text-[#7189A0]">{b.name || "—"} · {b.breed || "نژاد نامشخص"}</div>
                 </div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg hover:bg-[#2A362F] text-[#9FB3A5]"><Pencil size={14} /></button>
+                <button onClick={() => openEdit(b)} className="p-1.5 rounded-lg hover:bg-[#1B3349] text-[#9DB4C7]"><Pencil size={14} /></button>
                 <button onClick={() => deleteBreeder(b.id)} className="p-1.5 rounded-lg hover:bg-[#3A1F1B] text-[#E88A7A]"><Trash2 size={14} /></button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[12px] text-[#B7C7BB]">
-              <div>سن: <span className="mono text-[#EDE8DC]">{ageInMonths(b.birthDate) ?? "—"} ماه</span></div>
-              <div>وزن: <span className="mono text-[#EDE8DC]">{fmt(b.weight)} kg</span></div>
-              <div>تخم: <span className="mono text-[#EDE8DC]">{fmt(b.eggProduction, 0)}</span></div>
-              <div>FCR: <span className="mono text-[#EDE8DC]">{fmt(b.fcr)}</span></div>
-              <div>هچ: <span className="mono text-[#EDE8DC]">{fmt(b.hatchPercent, 0)}٪</span></div>
-              <div>مقاومت: <span className="mono text-[#EDE8DC]">{fmt(b.resistanceScore, 0)}/۱۰</span></div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[12px] text-[#B7C9D6]">
+              <div>سن: <span className="mono text-[#E7EEF4]">{ageInMonths(b.birthDate) ?? "—"} ماه</span></div>
+              <div>وزن: <span className="mono text-[#E7EEF4]">{fmt(b.weight)} kg</span></div>
+              <div>تخم: <span className="mono text-[#E7EEF4]">{fmt(b.eggProduction, 0)}</span></div>
+              <div>FCR: <span className="mono text-[#E7EEF4]">{fmt(b.fcr)}</span></div>
+              <div>هچ: <span className="mono text-[#E7EEF4]">{fmt(b.hatchPercent, 0)}٪</span></div>
+              <div>مقاومت: <span className="mono text-[#E7EEF4]">{fmt(b.resistanceScore, 0)}/۱۰</span></div>
             </div>
-            <div className="flex items-center justify-between pt-2 border-t border-[#2A362F]">
-              <div className="text-[11px] text-[#7C9186]">پدر: {byId.get(b.sireId)?.tag || "—"} · مادر: {byId.get(b.damId)?.tag || "—"}</div>
+            <div className="flex items-center justify-between pt-2 border-t border-[#1B3349]">
+              <div className="text-[11px] text-[#7189A0]">پدر: {byId.get(b.sireId)?.tag || "—"} · مادر: {byId.get(b.damId)?.tag || "—"}</div>
               <Pill tone="accent">SI {(selectionScores.get(b.id) || 0).toFixed(2)}</Pill>
             </div>
             {b.mortality && <div className="flex items-center gap-1 text-[11px] text-[#E88A7A]"><Skull size={12} /> تلف‌شده {b.mortalityDate ? `— ${b.mortalityDate}` : ""}</div>}
@@ -183,7 +183,7 @@ export function PedigreeTab({ breeders, byId, focus, setFocus }) {
         <h1 className="text-2xl font-extrabold">شجره‌نامه</h1>
       </header>
       <div className="flex items-center gap-2">
-        <span className="text-sm text-[#9FB3A5]">نمایش شجره برای:</span>
+        <span className="text-sm text-[#9DB4C7]">نمایش شجره برای:</span>
         <select className={inputCls} value={focusBreeder?.id || ""} onChange={(e) => setFocus(e.target.value)}>
           {breeders.map((b) => <option key={b.id} value={b.id}>{b.tag || b.name}</option>)}
         </select>
@@ -203,14 +203,14 @@ export function PedigreeTab({ breeders, byId, focus, setFocus }) {
 function TreeNode({ breeder }) {
   if (!breeder) {
     return (
-      <div className="w-32 h-16 rounded-[45%_55%_55%_45%_/_60%_60%_40%_40%] border border-dashed border-[#354238] flex items-center justify-center text-[10px] text-[#5C6A61]">
+      <div className="w-32 h-16 rounded-[45%_55%_55%_45%_/_60%_60%_40%_40%] border border-dashed border-[#24425E] flex items-center justify-center text-[10px] text-[#56707F]">
         نامشخص
       </div>
     );
   }
   const male = breeder.sex === "male";
   return (
-    <div className={`w-32 rounded-[45%_55%_55%_45%_/_60%_60%_40%_40%] border px-3 py-2 text-center ${male ? "bg-[#2A2010] border-[#5A4218] text-[#E8A33D]" : "bg-[#152A20] border-[#2E5641] text-[#7FD9A8]"}`}>
+    <div className={`w-32 rounded-[45%_55%_55%_45%_/_60%_60%_40%_40%] border px-3 py-2 text-center ${male ? "bg-[#16283D] border-[#2C5478] text-[#7FB3E8]" : "bg-[#152A20] border-[#2E5641] text-[#7FD9A8]"}`}>
       <div className="text-[12px] font-bold truncate">{breeder.tag || breeder.name}</div>
       <div className="text-[10px] opacity-70">{breeder.breed || "—"}</div>
     </div>
@@ -225,7 +225,7 @@ function TreeLevel({ nodes }) {
         <div className="flex items-center gap-6">{items.map((item, i) => <TreeNode key={i} breeder={item ? item.breeder : null} />)}</div>
         {gen < 3 && (
           <>
-            <div className="flex gap-1 text-[#354238]">{items.map((_, i) => <ChevronLeft key={i} size={14} />)}</div>
+            <div className="flex gap-1 text-[#24425E]">{items.map((_, i) => <ChevronLeft key={i} size={14} />)}</div>
             {renderGen(items.flatMap((item) => (item ? [item.sire, item.dam] : [null, null])), gen + 1)}
           </>
         )}
@@ -271,11 +271,11 @@ export function PairingTab({ males, females, byId, goalId, pairSel, setPairSel }
           <ScoreCard icon="⭐" label="احتمال افت صفات" value={score.declineRisk} tone={score.declineRisk < 0.2 ? "good" : score.declineRisk < 0.4 ? "warn" : "bad"} />
           <Card className="p-4 md:col-span-3 flex items-center justify-between flex-wrap gap-3">
             <div>
-              <div className="text-sm text-[#9FB3A5]">امتیاز کلی جفت‌گیری</div>
+              <div className="text-sm text-[#9DB4C7]">امتیاز کلی جفت‌گیری</div>
               <div className="text-3xl font-extrabold mono mt-1">{(score.overall * 100).toFixed(0)}٪</div>
             </div>
             <div className="text-left">
-              <div className="text-sm text-[#9FB3A5]">ضریب هم‌خونی نسل بعد</div>
+              <div className="text-sm text-[#9DB4C7]">ضریب هم‌خونی نسل بعد</div>
               <Pill tone={score.inbreeding >= 0.0625 ? "warn" : "good"}>{(score.inbreeding * 100).toFixed(1)}٪</Pill>
             </div>
           </Card>
@@ -288,11 +288,11 @@ export function PairingTab({ males, females, byId, goalId, pairSel, setPairSel }
 function ScoreCard({ icon, label, value, tone }) {
   return (
     <Card className="p-4">
-      <div className="text-[12px] text-[#9FB3A5] flex items-center gap-1">{icon} {label}</div>
+      <div className="text-[12px] text-[#9DB4C7] flex items-center gap-1">{icon} {label}</div>
       <div className={`text-2xl font-extrabold mono mt-1 ${tone === "good" ? "text-[#7FD9A8]" : tone === "warn" ? "text-[#E8B15D]" : "text-[#E88A7A]"}`}>
         {(value * 100).toFixed(0)}٪
       </div>
-      <div className="w-full h-1.5 bg-[#1A2320] rounded-full mt-2 overflow-hidden">
+      <div className="w-full h-1.5 bg-[#0E2033] rounded-full mt-2 overflow-hidden">
         <div className={`h-full ${tone === "good" ? "bg-[#7FD9A8]" : tone === "warn" ? "bg-[#E8B15D]" : "bg-[#E88A7A]"}`} style={{ width: `${value * 100}%` }} />
       </div>
     </Card>
@@ -318,7 +318,7 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
       <header>
         <SectionEyebrow>SIMULATION · شبیه‌سازی نسل‌ها</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">شبیه‌سازی احتمالی نسل‌ها</h1>
-        <p className="text-[#9FB3A5] text-sm mt-1 flex items-center gap-1"><Info size={13} /> همه مقادیر برآورد احتمالی و بازه‌ای هستند، نه نتیجه قطعی.</p>
+        <p className="text-[#9DB4C7] text-sm mt-1 flex items-center gap-1"><Info size={13} /> همه مقادیر برآورد احتمالی و بازه‌ای هستند، نه نتیجه قطعی.</p>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Field label="خروس (پدر)">
@@ -342,13 +342,13 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
             <div className="h-56 mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
-                  <CartesianGrid stroke="#2A362F" strokeDasharray="3 3" />
-                  <XAxis dataKey="gen" stroke="#7C9186" fontSize={11} />
-                  <YAxis stroke="#7C9186" fontSize={11} />
-                  <Tooltip contentStyle={{ background: "#1B2420", border: "1px solid #354238", borderRadius: 8 }} />
-                  <Line type="monotone" dataKey="high" stroke="#354238" strokeWidth={1} dot={false} name="سقف بازه" />
-                  <Line type="monotone" dataKey="value" stroke="#E8A33D" strokeWidth={2.5} dot={{ r: 3 }} name="میانگین برآوردی" />
-                  <Line type="monotone" dataKey="low" stroke="#354238" strokeWidth={1} dot={false} name="کف بازه" />
+                  <CartesianGrid stroke="#1B3349" strokeDasharray="3 3" />
+                  <XAxis dataKey="gen" stroke="#7189A0" fontSize={11} />
+                  <YAxis stroke="#7189A0" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "#0A1622", border: "1px solid #24425E", borderRadius: 8 }} />
+                  <Line type="monotone" dataKey="high" stroke="#24425E" strokeWidth={1} dot={false} name="سقف بازه" />
+                  <Line type="monotone" dataKey="value" stroke="#6FA83E" strokeWidth={2.5} dot={{ r: 3 }} name="میانگین برآوردی" />
+                  <Line type="monotone" dataKey="low" stroke="#24425E" strokeWidth={1} dot={false} name="کف بازه" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -356,19 +356,19 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {sim.map((row) => (
               <Card key={row.gen} className="p-3.5">
-                <div className="text-[11px] text-[#E8A33D] font-bold mb-2">نسل {row.gen}</div>
+                <div className="text-[11px] text-[#6FA83E] font-bold mb-2">نسل {row.gen}</div>
                 {Object.keys(TRAIT_META).map((f) => {
                   const t = row.traits[f];
                   if (!t) return null;
                   return (
-                    <div key={f} className="text-[11px] text-[#B7C7BB] mb-1 flex justify-between">
+                    <div key={f} className="text-[11px] text-[#B7C9D6] mb-1 flex justify-between">
                       <span>{TRAIT_META[f].label.split(" ")[0]}</span>
-                      <span className="mono text-[#EDE8DC]">{fmt(t.mean, 1)}</span>
+                      <span className="mono text-[#E7EEF4]">{fmt(t.mean, 1)}</span>
                     </div>
                   );
                 })}
-                <div className="text-[11px] mt-2 pt-2 border-t border-[#2A362F] flex justify-between">
-                  <span className="text-[#9FB3A5]">هم‌خونی</span>
+                <div className="text-[11px] mt-2 pt-2 border-t border-[#1B3349] flex justify-between">
+                  <span className="text-[#9DB4C7]">هم‌خونی</span>
                   <span className={`mono ${row.inbreeding > 0.0625 ? "text-[#E8B15D]" : "text-[#7FD9A8]"}`}>{(row.inbreeding * 100).toFixed(1)}٪</span>
                 </div>
               </Card>
@@ -408,18 +408,18 @@ export function GoalTab({ goalId, setGoalId }) {
       <header>
         <SectionEyebrow>BREEDING GOAL · هدف اصلاح نژاد</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">هدف اصلی برنامه اصلاح نژاد را انتخاب کنید</h1>
-        <p className="text-[#9FB3A5] text-sm mt-1">این انتخاب روی شاخص انتخاب، پیشنهادهای هوشمند و شبیه‌سازی نسل‌ها اثر می‌گذارد.</p>
+        <p className="text-[#9DB4C7] text-sm mt-1">این انتخاب روی شاخص انتخاب، پیشنهادهای هوشمند و شبیه‌سازی نسل‌ها اثر می‌گذارد.</p>
       </header>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {GOALS.map((g) => (
           <button
             key={g.id}
             onClick={() => setGoalId(g.id)}
-            className={`p-5 rounded-2xl border text-right transition-all ${goalId === g.id ? "bg-[#2A2010] border-[#E8A33D]" : "bg-[#212C25] border-[#31402F] hover:border-[#4A5B4F]"}`}
+            className={`p-5 rounded-2xl border text-right transition-all ${goalId === g.id ? "bg-[#132A1C] border-[#6FA83E]" : "bg-[#13253A] border-[#1E3A54] hover:border-[#3A5B72]"}`}
           >
             <div className="text-2xl mb-2">{g.icon}</div>
             <div className="font-bold text-sm">{g.label}</div>
-            {goalId === g.id && <div className="flex items-center gap-1 text-[11px] text-[#E8A33D] mt-2"><Check size={12} /> هدف فعال</div>}
+            {goalId === g.id && <div className="flex items-center gap-1 text-[11px] text-[#6FA83E] mt-2"><Check size={12} /> هدف فعال</div>}
           </button>
         ))}
       </div>
@@ -433,7 +433,7 @@ export function AiTab({ suggestions, breedersCount }) {
       <header>
         <SectionEyebrow>AI ADVISOR · پیشنهاد هوشمند</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">پیشنهادهای اصلاح نژاد</h1>
-        <p className="text-[#9FB3A5] text-sm mt-1">بر اساس رکوردهای ثبت‌شده و هدف اصلاح نژاد فعلی تولید می‌شود.</p>
+        <p className="text-[#9DB4C7] text-sm mt-1">بر اساس رکوردهای ثبت‌شده و هدف اصلاح نژاد فعلی تولید می‌شود.</p>
       </header>
       {breedersCount < 4 && <EmptyHint text="برای دریافت پیشنهاد، حداقل ۴ مولد با رکورد کامل ثبت کنید." />}
       <div className="flex flex-col gap-2">
@@ -460,28 +460,28 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
           <h1 className="text-2xl font-extrabold">گزارش خروجی</h1>
         </div>
         <div className="flex gap-2">
-          <button onClick={exportExcel} className="flex items-center gap-2 bg-[#2A362F] text-[#7FD9A8] font-semibold px-4 py-2.5 rounded-xl hover:brightness-110">
+          <button onClick={exportExcel} className="flex items-center gap-2 bg-[#1B3349] text-[#7FD9A8] font-semibold px-4 py-2.5 rounded-xl hover:brightness-110">
             <FileDown size={16} /> خروجی Excel
           </button>
-          <button onClick={() => window.print()} className="flex items-center gap-2 bg-[#E8A33D] text-[#1B2420] font-bold px-4 py-2.5 rounded-xl hover:brightness-110">
+          <button onClick={() => window.print()} className="flex items-center gap-2 bg-[#6FA83E] text-[#0A1622] font-bold px-4 py-2.5 rounded-xl hover:brightness-110">
             <FileDown size={16} /> خروجی PDF (چاپ)
           </button>
         </div>
       </header>
       <Card className="p-6 print:border-none">
         <h2 className="text-xl font-extrabold mb-1">گزارش ژنتیکی گله</h2>
-        <p className="text-[#9FB3A5] text-sm mb-4">هدف اصلاح نژاد: {goal?.label} · تاریخ گزارش: {new Date().toLocaleDateString("fa-IR")}</p>
+        <p className="text-[#9DB4C7] text-sm mb-4">هدف اصلاح نژاد: {goal?.label} · تاریخ گزارش: {new Date().toLocaleDateString("fa-IR")}</p>
         <SectionEyebrow>مولدها</SectionEyebrow>
         <table className="w-full text-[12px] my-2 border-collapse">
           <thead>
-            <tr className="text-[#7C9186] border-b border-[#2A362F]">
+            <tr className="text-[#7189A0] border-b border-[#1B3349]">
               <th className="text-right py-1.5">شماره</th><th className="text-right">جنسیت</th><th className="text-right">وزن</th>
               <th className="text-right">تخم</th><th className="text-right">FCR</th><th className="text-right">هچ</th><th className="text-right">شاخص انتخاب</th>
             </tr>
           </thead>
           <tbody>
             {breeders.map((b) => (
-              <tr key={b.id} className="border-b border-[#232C27]">
+              <tr key={b.id} className="border-b border-[#142538]">
                 <td className="py-1.5">{b.tag || b.name}</td>
                 <td>{b.sex === "male" ? "خروس" : "مرغ"}</td>
                 <td className="mono">{fmt(b.weight)}</td>
@@ -495,15 +495,15 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
         </table>
         <SectionEyebrow>هشدارها</SectionEyebrow>
         <ul className="text-[12px] my-2 list-disc pr-5 flex flex-col gap-1">
-          {alerts.length === 0 && <li className="text-[#7C9186]">هشداری ثبت نشده.</li>}
+          {alerts.length === 0 && <li className="text-[#7189A0]">هشداری ثبت نشده.</li>}
           {alerts.map((a, i) => <li key={i}>{a.text}</li>)}
         </ul>
         <SectionEyebrow>پیشنهاد اصلاح نژاد</SectionEyebrow>
         <ul className="text-[12px] my-2 list-disc pr-5 flex flex-col gap-1">
-          {aiSuggestions.length === 0 && <li className="text-[#7C9186]">پیشنهادی موجود نیست.</li>}
+          {aiSuggestions.length === 0 && <li className="text-[#7189A0]">پیشنهادی موجود نیست.</li>}
           {aiSuggestions.map((s, i) => <li key={i}>{s.text}</li>)}
         </ul>
       </Card>
     </div>
   );
-}
+      }
