@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Card, Field, Pill, inputCls } from "./ui.jsx";
+import JalaliDateInput from "./JalaliDateInput.jsx";
+import { formatJalali } from "../lib/jalali.js";
+import { SPECIES } from "../lib/constants.js";
 
 export default function BreederFormModal({ breeder, breeders, onClose, onSave }) {
   const [form, setForm] = useState(breeder);
@@ -34,17 +37,24 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
           <Field label="نام (اختیاری)">
             <input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} />
           </Field>
+          <Field label="نوع دام">
+            <select className={inputCls} value={form.species} onChange={(e) => set("species", e.target.value)}>
+              {SPECIES.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
+          </Field>
           <Field label="جنسیت">
             <select className={inputCls} value={form.sex} onChange={(e) => set("sex", e.target.value)}>
-              <option value="female">مرغ</option>
-              <option value="male">خروس</option>
+              <option value="female">ماده</option>
+              <option value="male">نر</option>
             </select>
           </Field>
           <Field label="نژاد">
             <input className={inputCls} value={form.breed} onChange={(e) => set("breed", e.target.value)} />
           </Field>
           <Field label="تاریخ تولد">
-            <input type="date" className={inputCls} value={form.birthDate} onChange={(e) => set("birthDate", e.target.value)} />
+            <JalaliDateInput value={form.birthDate} onChange={(v) => set("birthDate", v)} />
           </Field>
           <Field label="وزن فعلی (kg)">
             <input type="number" step="0.01" className={inputCls} value={form.weight} onChange={(e) => set("weight", e.target.value)} />
@@ -88,22 +98,24 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
           </Field>
           {form.mortality && (
             <Field label="تاریخ تلفات">
-              <input type="date" className={inputCls} value={form.mortalityDate} onChange={(e) => set("mortalityDate", e.target.value)} />
+              <JalaliDateInput value={form.mortalityDate} onChange={(v) => set("mortalityDate", v)} />
             </Field>
           )}
         </div>
 
         <div className="mt-5">
           <div className="text-[#6FA83E] text-[11px] tracking-[0.2em] font-semibold mb-1">WEIGHT LOG · تاریخچه وزن</div>
-          <div className="flex gap-2 mt-2">
-            <input type="date" className={inputCls} value={newWeightDate} onChange={(e) => setNewWeightDate(e.target.value)} />
-            <input type="number" step="0.01" placeholder="وزن (kg)" className={inputCls} value={newWeightVal} onChange={(e) => setNewWeightVal(e.target.value)} />
-            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[#1B3349] text-[#6FA83E] text-sm">افزودن</button>
+          <div className="flex flex-col sm:flex-row gap-2 mt-2">
+            <div className="flex-[1.4]">
+              <JalaliDateInput value={newWeightDate} onChange={setNewWeightDate} />
+            </div>
+            <input type="number" step="0.01" placeholder="وزن (kg)" className={`${inputCls} flex-1`} value={newWeightVal} onChange={(e) => setNewWeightVal(e.target.value)} />
+            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[#1B3349] text-[#6FA83E] text-sm shrink-0">افزودن</button>
           </div>
           {(form.weightHistory || []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
               {form.weightHistory.map((h, i) => (
-                <Pill key={i}>{h.date}: {h.weight}kg</Pill>
+                <Pill key={i}>{formatJalali(h.date)}: {h.weight}kg</Pill>
               ))}
             </div>
           )}
@@ -120,4 +132,4 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
       </Card>
     </div>
   );
-          }
+                  }
