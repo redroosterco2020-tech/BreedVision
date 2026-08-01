@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from "react";
 import {
-  Egg, Bird, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
-  LayoutDashboard, FileDown, Dna, LogOut,
+  Bird, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
+  LayoutDashboard, FileDown, Dna, LogOut, Menu, X,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useFlockData } from "../lib/useFlockData.js";
 import { emptyBreeder, uid, ageInMonths } from "../lib/constants.js";
-import { computeSelectionIndex, computeAlerts, computeAiSuggestions, kinshipCoefficient } from "../lib/genetics.js";
+import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import {
   DashboardTab, BreedersTab, PedigreeTab, PairingTab, SimulationTab,
@@ -35,6 +35,7 @@ export default function AppShell() {
   const [pairSel, setPairSel] = useState({ sireId: "", damId: "" });
   const [pedigreeFocus, setPedigreeFocus] = useState("");
   const [search, setSearch] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const byId = useMemo(() => new Map(breeders.map((b) => [b.id, b])), [breeders]);
   const males = useMemo(() => breeders.filter((b) => b.sex === "male"), [breeders]);
@@ -56,6 +57,7 @@ export default function AppShell() {
     setEditing(null);
   }
   function deleteBreeder(id) { updateBreeders((prev) => prev.filter((p) => p.id !== id)); }
+  function selectTab(id) { setTab(id); setMenuOpen(false); }
 
   function exportExcel() {
     const wb = XLSX.utils.book_new();
@@ -82,6 +84,8 @@ export default function AppShell() {
     return (b.tag + b.name + b.breed).toLowerCase().includes(q.toLowerCase());
   });
 
+  const activeNav = NAV.find((n) => n.id === tab);
+
   if (!loaded) {
     return (
       <div className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center">
@@ -92,12 +96,65 @@ export default function AppShell() {
 
   return (
     <div dir="rtl" className="min-h-screen w-full bg-[#0D1B2A] text-[#E7EEF4]">
-      <div className="flex min-h-screen">
-        <aside className="no-print w-[220px] shrink-0 bg-[#0A1622] border-l border-[#1B3349] flex flex-col py-6 px-3 gap-1">
-          <div className="flex items-center gap-2 px-3 mb-6">
-            <div className="w-9 h-9 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#14263A] to-[#4C7A2E] flex items-center justify-center text-[#E7EEF4] font-extrabold text-lg">
-              <Egg size={18} />
+      {/* Mobile top bar */}
+      <header className="no-print md:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0A1622] border-b border-[#1B3349] px-4 py-3">
+        <div className="flex items-center gap-2">
+          <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-8 h-8 rounded-xl object-cover" />
+          <div>
+            <div className="font-extrabold text-sm leading-none">فلاک‌لاین</div>
+            <div className="text-[10px] text-[#7189A0] mono mt-0.5">{activeNav?.label}</div>
+          </div>
+        </div>
+        <button onClick={() => setMenuOpen(true)} className="p-2 rounded-lg hover:bg-[#1B3349] text-[#E7EEF4]">
+          <Menu size={22} />
+        </button>
+      </header>
+
+      {/* Mobile overlay */}
+      {menuOpen && (
+        <div className="no-print fixed inset-0 z-40 md:hidden">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
+          <aside className="absolute top-0 right-0 h-full w-[78%] max-w-[300px] bg-[#0A1622] border-l border-[#1B3349] flex flex-col py-5 px-3 gap-1 overflow-y-auto">
+            <div className="flex items-center justify-between px-2 mb-4">
+              <div className="flex items-center gap-2.5">
+                <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-9 h-9 rounded-xl object-cover" />
+                <div>
+                  <div className="font-extrabold text-[15px] leading-none">فلاک‌لاین</div>
+                  <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
+                </div>
+              </div>
+              <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg hover:bg-[#1B3349]">
+                <X size={18} />
+              </button>
             </div>
+            {NAV.map((n) => {
+              const Icon = n.icon;
+              const active = tab === n.id;
+              return (
+                <button key={n.id} onClick={() => selectTab(n.id)}
+                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[#1B3349] text-[#6FA83E] font-semibold" : "text-[#B7C9D6] hover:bg-[#13253A]"}`}>
+                  <Icon size={16} />{n.label}
+                </button>
+              );
+            })}
+            <div className="mt-auto flex flex-col gap-2 pt-3">
+              <div className="px-3 text-[10px] text-[#56707F] leading-5">
+                {user?.email}
+                <br />{breeders.length} مولد ثبت‌شده
+              </div>
+              <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#E88A7A] hover:bg-[#3A1F1B]">
+                <LogOut size={16} /> خروج از حساب
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <div className="flex min-h-screen">
+        {/* Desktop sidebar */}
+        <aside className="no-print hidden md:flex w-[220px] shrink-0 bg-[#0A1622] border-l border-[#1B3349] flex-col py-6 px-3 gap-1">
+          <div className="flex items-center gap-2 px-3 mb-6">
+            <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-9 h-9 rounded-xl object-cover" />
             <div>
               <div className="font-extrabold text-[15px] leading-none">فلاک‌لاین</div>
               <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
@@ -124,7 +181,7 @@ export default function AppShell() {
           </div>
         </aside>
 
-        <main className="flex-1 p-6 max-w-[1200px]">
+        <main className="flex-1 p-4 md:p-6 max-w-full md:max-w-[1200px] overflow-x-hidden">
           {tab === "dashboard" && <DashboardTab breeders={breeders} selectionScores={selectionScores} goalId={goalId} byId={byId} alerts={alerts} />}
           {tab === "breeders" && (
             <BreedersTab breeders={filteredBreeders} byId={byId} search={search} setSearch={setSearch} openNew={openNew} openEdit={openEdit} deleteBreeder={deleteBreeder} selectionScores={selectionScores} />
@@ -146,4 +203,4 @@ export default function AppShell() {
       )}
     </div>
   );
-        }
+                               }
