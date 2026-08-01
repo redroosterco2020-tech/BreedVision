@@ -99,9 +99,9 @@ export default function AppShell() {
       {/* Mobile top bar */}
       <header className="no-print md:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0A1622] border-b border-[#1B3349] px-4 py-3">
         <div className="flex items-center gap-2">
-          <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-8 h-8 rounded-xl object-cover" />
+          <img src="/icons/icon-192.png" alt="BreedVision" className="w-8 h-8 rounded-xl object-cover" />
           <div>
-            <div className="font-extrabold text-sm leading-none">فلاک‌لاین</div>
+            <div className="font-extrabold text-sm leading-none">BreedVision</div>
             <div className="text-[10px] text-[#7189A0] mono mt-0.5">{activeNav?.label}</div>
           </div>
         </div>
@@ -117,9 +117,9 @@ export default function AppShell() {
           <aside className="absolute top-0 right-0 h-full w-[78%] max-w-[300px] bg-[#0A1622] border-l border-[#1B3349] flex flex-col py-5 px-3 gap-1 overflow-y-auto">
             <div className="flex items-center justify-between px-2 mb-4">
               <div className="flex items-center gap-2.5">
-                <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-9 h-9 rounded-xl object-cover" />
+                <img src="/icons/icon-192.png" alt="BreedVision" className="w-9 h-9 rounded-xl object-cover" />
                 <div>
-                  <div className="font-extrabold text-[15px] leading-none">فلاک‌لاین</div>
+                  <div className="font-extrabold text-[15px] leading-none">BreedVision</div>
                   <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
                 </div>
               </div>
@@ -154,9 +154,9 @@ export default function AppShell() {
         {/* Desktop sidebar */}
         <aside className="no-print hidden md:flex w-[220px] shrink-0 bg-[#0A1622] border-l border-[#1B3349] flex-col py-6 px-3 gap-1">
           <div className="flex items-center gap-2 px-3 mb-6">
-            <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-9 h-9 rounded-xl object-cover" />
+            <img src="/icons/icon-192.png" alt="BreedVision" className="w-9 h-9 rounded-xl object-cover" />
             <div>
-              <div className="font-extrabold text-[15px] leading-none">فلاک‌لاین</div>
+              <div className="font-extrabold text-[15px] leading-none">BreedVision</div>
               <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
             </div>
           </div>
@@ -203,4 +203,4 @@ export default function AppShell() {
       )}
     </div>
   );
-                               }
+    }
