@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Egg, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { mapAuthError } from "./Login.jsx";
 
@@ -31,9 +31,7 @@ export default function Signup() {
     <div dir="rtl" className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-[#13253A] border border-[#1E3A54] rounded-2xl p-7">
         <div className="flex items-center gap-2.5 mb-6">
-          <div className="w-10 h-10 rounded-[40%_60%_60%_40%] bg-gradient-to-br from-[#14263A] to-[#4C7A2E] flex items-center justify-center text-[#E7EEF4]">
-            <Egg size={20} />
-          </div>
+          <img src="/icons/icon-192.png" alt="فلاک‌لاین" className="w-10 h-10 rounded-xl object-cover" />
           <div>
             <div className="font-extrabold text-lg leading-none">فلاک‌لاین</div>
             <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
@@ -85,4 +83,4 @@ export default function Signup() {
       </div>
     </div>
   );
-          }
+            }
