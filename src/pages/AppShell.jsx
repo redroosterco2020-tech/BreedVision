@@ -6,7 +6,7 @@ import {
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useFlockData } from "../lib/useFlockData.js";
-import { emptyBreeder, uid, ageInMonths, SPECIES } from "../lib/constants.js";
+import { emptyBreeder, uid, ageInMonths, SPECIES, ALL_GOALS } from "../lib/constants.js";
 import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import {
@@ -21,7 +21,7 @@ const NAV = [
   { id: "pairing", label: "انتخاب جفت", icon: Dna },
   { id: "simulation", label: "شبیه‌سازی نسل‌ها", icon: FlaskConical },
   { id: "alerts", label: "هشدارها", icon: AlertTriangle },
-  { id: "goal", label: "هدف اصلاح نژاد", icon: Target },
+  { id: "goal", label: "اهداف اصلاح نژاد", icon: Target },
   { id: "ai", label: "پیشنهاد هوشمند", icon: Sparkles },
   { id: "report", label: "گزارش", icon: FileDown },
 ];
@@ -30,7 +30,7 @@ const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
 export default function AppShell() {
   const { user, logout } = useAuth();
-  const { breeders, goalId, loaded, updateBreeders, updateGoal } = useFlockData(user?.uid);
+  const { breeders, goalWeights, loaded, updateBreeders, updateGoalWeights, saveError, saving } = useFlockData(user?.uid);
   const [tab, setTab] = useState("dashboard");
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -42,9 +42,9 @@ export default function AppShell() {
   const byId = useMemo(() => new Map(breeders.map((b) => [b.id, b])), [breeders]);
   const males = useMemo(() => breeders.filter((b) => b.sex === "male"), [breeders]);
   const females = useMemo(() => breeders.filter((b) => b.sex === "female"), [breeders]);
-  const selectionScores = useMemo(() => computeSelectionIndex(breeders, goalId), [breeders, goalId]);
+  const selectionScores = useMemo(() => computeSelectionIndex(breeders, goalWeights), [breeders, goalWeights]);
   const alerts = useMemo(() => computeAlerts(breeders, byId), [breeders, byId]);
-  const aiSuggestions = useMemo(() => computeAiSuggestions(breeders, selectionScores, byId, goalId), [breeders, selectionScores, byId, goalId]);
+  const aiSuggestions = useMemo(() => computeAiSuggestions(breeders, selectionScores, byId, goalWeights), [breeders, selectionScores, byId, goalWeights]);
 
   function openNew() { setEditing(emptyBreeder()); setShowForm(true); }
   function openEdit(b) { setEditing({ ...b }); setShowForm(true); }
@@ -67,17 +67,24 @@ export default function AppShell() {
       "شماره شناسایی": b.tag, "نام": b.name, "نوع دام": SPECIES_MAP[b.species] || "", "جنسیت": b.sex === "male" ? "نر" : "ماده",
       "نژاد": b.breed, "تاریخ تولد": b.birthDate, "سن (ماه)": ageInMonths(b.birthDate) ?? "",
       "پدر": byId.get(b.sireId)?.tag || "", "مادر": byId.get(b.damId)?.tag || "",
-      "وزن (kg)": b.weight, "تولید تخم": b.eggProduction, "درصد هچ": b.hatchPercent, "FCR": b.fcr,
-      "مقاومت (۱-۱۰)": b.resistanceScore, "طول عمر تولید (ماه)": b.productiveLifespanMonths,
+      "وزن (kg)": b.weight, "تولید شیر (لیتر/روز)": b.milkProduction, "کیفیت گوشت": b.meatQuality,
+      "تولید تخم": b.eggProduction, "درصد هچ": b.hatchPercent, "FCR": b.fcr,
+      "مقاومت (۱-۱۰)": b.resistanceScore, "باروری (۱-۱۰)": b.fertilityScore, "نرخ زنده‌مانی (%)": b.survivalRate,
+      "طول عمر تولید (ماه)": b.productiveLifespanMonths, "سازگاری آب‌وهوا (۱-۱۰)": b.climateTolerance,
       "تلفات": b.mortality ? "بله" : "خیر", "شاخص انتخاب": (selectionScores.get(b.id) || 0).toFixed(3),
     }));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(breederRows), "مولدها");
     const recordRows = [];
     breeders.forEach((b) => (b.weightHistory || []).forEach((h) => recordRows.push({ "شماره شناسایی": b.tag, "تاریخ": h.date, "وزن (kg)": h.weight })));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(recordRows), "رکوردهای وزن");
+    const goalRows = Object.entries(goalWeights || {}).map(([gid, w]) => {
+      const g = ALL_GOALS.find((x) => x.id === gid);
+      return { "هدف": g ? g.label : gid, "اهمیت (%)": w };
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(goalRows), "اهداف اصلاح نژاد");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(alerts.map((a) => ({ نوع: a.type, پیام: a.text }))), "هشدارها");
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(aiSuggestions.map((a) => ({ نوع: a.tone, پیشنهاد: a.text }))), "پیشنهاد اصلاح نژاد");
-    XLSX.writeFile(wb, "flockline-report.xlsx");
+    XLSX.writeFile(wb, "breedvision-report.xlsx");
   }
 
   const filteredBreeders = breeders.filter((b) => {
@@ -98,6 +105,11 @@ export default function AppShell() {
 
   return (
     <div dir="rtl" className="min-h-screen w-full bg-[#0D1B2A] text-[#E7EEF4]">
+      {saveError && (
+        <div className="no-print fixed top-0 inset-x-0 z-50 bg-[#3A1F1B] border-b border-[#5A3128] text-[#E88A7A] text-xs px-4 py-2 text-center">
+          {saveError}
+        </div>
+      )}
       {/* Mobile top bar */}
       <header className="no-print md:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0A1622] border-b border-[#1B3349] px-4 py-3">
         <div className="flex items-center gap-2">
@@ -184,18 +196,18 @@ export default function AppShell() {
         </aside>
 
         <main className="flex-1 p-4 md:p-6 max-w-full md:max-w-[1200px] overflow-x-hidden">
-          {tab === "dashboard" && <DashboardTab breeders={breeders} selectionScores={selectionScores} goalId={goalId} byId={byId} alerts={alerts} />}
+          {tab === "dashboard" && <DashboardTab breeders={breeders} selectionScores={selectionScores} goalWeights={goalWeights} byId={byId} alerts={alerts} />}
           {tab === "breeders" && (
             <BreedersTab breeders={filteredBreeders} byId={byId} search={search} setSearch={setSearch} openNew={openNew} openEdit={openEdit} deleteBreeder={deleteBreeder} selectionScores={selectionScores} />
           )}
           {tab === "pedigree" && <PedigreeTab breeders={breeders} byId={byId} focus={pedigreeFocus} setFocus={setPedigreeFocus} />}
-          {tab === "pairing" && <PairingTab breeders={breeders} males={males} females={females} byId={byId} goalId={goalId} pairSel={pairSel} setPairSel={setPairSel} />}
-          {tab === "simulation" && <SimulationTab males={males} females={females} byId={byId} goalId={goalId} pairSel={pairSel} setPairSel={setPairSel} />}
+          {tab === "pairing" && <PairingTab breeders={breeders} males={males} females={females} byId={byId} goalWeights={goalWeights} pairSel={pairSel} setPairSel={setPairSel} />}
+          {tab === "simulation" && <SimulationTab males={males} females={females} byId={byId} goalWeights={goalWeights} pairSel={pairSel} setPairSel={setPairSel} />}
           {tab === "alerts" && <AlertsTab alerts={alerts} />}
-          {tab === "goal" && <GoalTab goalId={goalId} setGoalId={updateGoal} />}
+          {tab === "goal" && <GoalTab goalWeights={goalWeights} setGoalWeights={updateGoalWeights} />}
           {tab === "ai" && <AiTab suggestions={aiSuggestions} breedersCount={breeders.length} />}
           {tab === "report" && (
-            <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalId={goalId} exportExcel={exportExcel} />
+            <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalWeights={goalWeights} exportExcel={exportExcel} />
           )}
         </main>
       </div>
@@ -205,4 +217,4 @@ export default function AppShell() {
       )}
     </div>
   );
-    }
+      }
