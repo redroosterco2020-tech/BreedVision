@@ -1,4 +1,4 @@
-import { GOALS, TRAIT_META } from "./constants.js";
+import { ALL_GOALS, TRAIT_META } from "./constants.js";
 
 // Returns Map(ancestorId -> minimal generation distance) including self at distance 0
 export function getAncestorPaths(id, byId, maxDepth = 6) {
@@ -34,14 +34,27 @@ export function kinshipCoefficient(idA, idB, byId) {
   return Math.min(f, 0.5);
 }
 
-export function selectionWeights(goalId) {
+// Converts a { goalId: percent } map into a per-trait-field weight map that
+// sums to 1. Multiple goals pointing at the same field (e.g. "growth" for
+// both livestock and poultry both map to "weight") add together.
+export function fieldWeightsFromGoals(goalWeights) {
+  const raw = {};
+  let total = 0;
+  Object.entries(goalWeights || {}).forEach(([goalId, pct]) => {
+    const p = Number(pct) || 0;
+    if (p <= 0) return;
+    const goal = ALL_GOALS.find((g) => g.id === goalId);
+    if (!goal) return;
+    raw[goal.field] = (raw[goal.field] || 0) + p;
+    total += p;
+  });
   const weights = {};
-  Object.keys(TRAIT_META).forEach((k) => (weights[k] = 0.08));
-  const goal = GOALS.find((g) => g.id === goalId);
-  if (goal) weights[goal.field] = 0.6;
-  const rest = 1 - weights[goal ? goal.field : ""];
-  const others = Object.keys(TRAIT_META).filter((k) => k !== (goal && goal.field));
-  others.forEach((k) => (weights[k] = rest / others.length));
+  Object.keys(TRAIT_META).forEach((f) => (weights[f] = 0));
+  if (total > 0) {
+    Object.entries(raw).forEach(([field, p]) => {
+      weights[field] = p / total;
+    });
+  }
   return weights;
 }
 
@@ -58,8 +71,8 @@ function zscores(breeders, field) {
   return m;
 }
 
-export function computeSelectionIndex(breeders, goalId) {
-  const weights = selectionWeights(goalId);
+export function computeSelectionIndex(breeders, goalWeights) {
+  const weights = fieldWeightsFromGoals(goalWeights);
   const zByField = {};
   Object.keys(TRAIT_META).forEach((field) => {
     zByField[field] = zscores(breeders, field);
@@ -70,26 +83,36 @@ export function computeSelectionIndex(breeders, goalId) {
     Object.keys(TRAIT_META).forEach((field) => {
       let z = zByField[field].get(b.id) || 0;
       if (TRAIT_META[field].inverse) z = -z;
-      s += z * weights[field];
+      s += z * (weights[field] || 0);
     });
     scores.set(b.id, s);
   });
   return scores;
 }
 
-export function pairingScore(sire, dam, byId, goalId) {
+export function pairingScore(sire, dam, byId, goalWeights) {
   const f = kinshipCoefficient(sire.id, dam.id, byId);
   const geneticCompat = Math.max(0, 1 - f / 0.25);
-  const goal = GOALS.find((g) => g.id === goalId);
-  const field = goal ? goal.field : "weight";
-  const meta = TRAIT_META[field];
-  const sVal = Number(sire[field]);
-  const dVal = Number(dam[field]);
+  const fieldWeights = fieldWeightsFromGoals(goalWeights);
+
   let improvementProb = 0.5;
-  if (!isNaN(sVal) && !isNaN(dVal) && sire[field] !== "" && dam[field] !== "") {
+  let weightedSum = 0;
+  let weightTotal = 0;
+  Object.keys(TRAIT_META).forEach((field) => {
+    const w = fieldWeights[field] || 0;
+    if (w <= 0) return;
+    const meta = TRAIT_META[field];
+    const sVal = Number(sire[field]);
+    const dVal = Number(dam[field]);
+    if (isNaN(sVal) || isNaN(dVal) || sire[field] === "" || dam[field] === "") return;
     const avg = (sVal + dVal) / 2;
-    improvementProb = 0.5 + Math.min(0.4, (meta.inverse ? -1 : 1) * (avg > 0 ? 0.05 : -0.05) + meta.h2 * 0.3);
-  }
+    const direction = meta.inverse ? -1 : 1;
+    const contribution = 0.5 + Math.min(0.4, direction * (avg > 0 ? 0.05 : -0.05) + meta.h2 * 0.3);
+    weightedSum += contribution * w;
+    weightTotal += w;
+  });
+  if (weightTotal > 0) improvementProb = weightedSum / weightTotal;
+
   const declineRisk = Math.min(0.95, f * 2 + (1 - geneticCompat) * 0.2);
   const overall = geneticCompat * 0.5 + improvementProb * 0.35 - declineRisk * 0.15;
   return {
@@ -101,9 +124,9 @@ export function pairingScore(sire, dam, byId, goalId) {
   };
 }
 
-export function simulateGenerations(sire, dam, byId, goalId, generations = 5) {
-  const goal = GOALS.find((g) => g.id === goalId) || GOALS[0];
+export function simulateGenerations(sire, dam, byId, goalWeights, generations = 5) {
   const baseF = kinshipCoefficient(sire.id, dam.id, byId);
+  const fieldWeights = fieldWeightsFromGoals(goalWeights);
   const fields = Object.keys(TRAIT_META);
   const results = [];
   let currentMeans = {};
@@ -122,12 +145,12 @@ export function simulateGenerations(sire, dam, byId, goalId, generations = 5) {
         genRow.traits[f] = null;
         return;
       }
-      const isGoalTrait = goal.field === f;
+      const w = fieldWeights[f] || 0;
       const drift = 1 - inbreeding * 0.6;
-      const gainRate = isGoalTrait ? 0.045 : 0.01;
+      const gainRate = 0.01 + w * 0.035; // scales from 0.01 (untargeted) up to 0.045 (fully targeted)
       let newMean = meta.inverse
-        ? mean * (1 - gainRate * (isGoalTrait ? 1 : 0.3)) * (1 + (1 - drift) * 0.4)
-        : mean * (1 + gainRate * (isGoalTrait ? 1 : 0.3)) * drift;
+        ? mean * (1 - gainRate) * (1 + (1 - drift) * 0.4)
+        : mean * (1 + gainRate) * drift;
       const varianceSpread = mean * (0.06 + inbreeding * 0.3 + g * 0.01);
       genRow.traits[f] = {
         mean: newMean,
@@ -184,7 +207,7 @@ export function computeAlerts(breeders, byId) {
   return list;
 }
 
-export function computeAiSuggestions(breeders, selectionScores, byId, goalId) {
+export function computeAiSuggestions(breeders, selectionScores, byId, goalWeights) {
   if (breeders.length < 4) return [];
   const males = breeders.filter((b) => b.sex === "male");
   const females = breeders.filter((b) => b.sex === "female");
@@ -201,7 +224,7 @@ export function computeAiSuggestions(breeders, selectionScores, byId, goalId) {
   let bestPair = null;
   topMales.forEach((m) => {
     females.forEach((f) => {
-      const sc = pairingScore(m, f, byId, goalId);
+      const sc = pairingScore(m, f, byId, goalWeights);
       if (!bestPair || sc.overall > bestPair.score.overall) bestPair = { m, f, score: sc };
     });
   });
@@ -210,11 +233,11 @@ export function computeAiSuggestions(breeders, selectionScores, byId, goalId) {
   }
   males.forEach((m) => {
     females.forEach((f) => {
-      const sc = pairingScore(m, f, byId, goalId);
+      const sc = pairingScore(m, f, byId, goalWeights);
       if (sc.inbreeding >= 0.125) {
         out.push({ tone: "bad", text: `جفت «${m.tag || m.name}» × «${f.tag || f.name}» مناسب نیست — هم‌خونی ${(sc.inbreeding * 100).toFixed(1)}٪.` });
       }
     });
   });
   return out.slice(0, 12);
-}
+      }
