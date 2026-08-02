@@ -9,6 +9,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
   const [form, setForm] = useState(breeder);
   const [newWeightDate, setNewWeightDate] = useState("");
   const [newWeightVal, setNewWeightVal] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const potentialParents = breeders.filter((b) => b.id !== form.id);
@@ -75,6 +76,12 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
               ))}
             </select>
           </Field>
+          <Field label="تولید شیر (لیتر/روز)">
+            <input type="number" step="0.1" className={inputCls} value={form.milkProduction} onChange={(e) => set("milkProduction", e.target.value)} />
+          </Field>
+          <Field label="کیفیت گوشت و لاشه (۱ تا ۱۰)">
+            <input type="number" min="1" max="10" className={inputCls} value={form.meatQuality} onChange={(e) => set("meatQuality", e.target.value)} />
+          </Field>
           <Field label="تولید تخم (فرد در سال)">
             <input type="number" className={inputCls} value={form.eggProduction} onChange={(e) => set("eggProduction", e.target.value)} />
           </Field>
@@ -84,11 +91,20 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
           <Field label="FCR">
             <input type="number" step="0.01" className={inputCls} value={form.fcr} onChange={(e) => set("fcr", e.target.value)} />
           </Field>
-          <Field label="امتیاز مقاومت (۱ تا ۱۰)">
+          <Field label="امتیاز مقاومت به بیماری (۱ تا ۱۰)">
             <input type="number" min="1" max="10" className={inputCls} value={form.resistanceScore} onChange={(e) => set("resistanceScore", e.target.value)} />
           </Field>
-          <Field label="طول عمر تولید (ماه)">
+          <Field label="امتیاز باروری (۱ تا ۱۰)">
+            <input type="number" min="1" max="10" className={inputCls} value={form.fertilityScore} onChange={(e) => set("fertilityScore", e.target.value)} />
+          </Field>
+          <Field label="نرخ زنده‌مانی نوزاد/جوجه (%)">
+            <input type="number" min="0" max="100" className={inputCls} value={form.survivalRate} onChange={(e) => set("survivalRate", e.target.value)} />
+          </Field>
+          <Field label="طول عمر / دوره تولید (ماه)">
             <input type="number" className={inputCls} value={form.productiveLifespanMonths} onChange={(e) => set("productiveLifespanMonths", e.target.value)} />
+          </Field>
+          <Field label="سازگاری با آب‌وهوا (۱ تا ۱۰)">
+            <input type="number" min="1" max="10" className={inputCls} value={form.climateTolerance} onChange={(e) => set("climateTolerance", e.target.value)} />
           </Field>
           <Field label="وضعیت تلفات">
             <select className={inputCls} value={form.mortality ? "yes" : "no"} onChange={(e) => set("mortality", e.target.value === "yes")}>
@@ -125,11 +141,29 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
           <textarea className={inputCls} rows={2} value={form.notes} onChange={(e) => set("notes", e.target.value)} />
         </Field>
 
+        {errorMsg && (
+          <div className="mt-4 bg-[#3A1F1B] border border-[#5A3128] text-[#E88A7A] text-sm rounded-lg px-3 py-2">
+            {errorMsg}
+          </div>
+        )}
+
         <div className="flex justify-end gap-2 mt-6">
           <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-[#9DB4C7] hover:bg-[#1B3349]">انصراف</button>
-          <button onClick={() => onSave(form)} className="px-4 py-2 rounded-xl text-sm bg-[#6FA83E] text-[#0A1622] font-bold">ذخیره مولد</button>
+          <button
+            onClick={() => {
+              if (!form.tag && !form.name) {
+                setErrorMsg("لطفاً حداقل «شماره شناسایی» یا «نام» را وارد کنید.");
+                return;
+              }
+              setErrorMsg("");
+              onSave(form);
+            }}
+            className="px-4 py-2 rounded-xl text-sm bg-[#6FA83E] text-[#0A1622] font-bold"
+          >
+            ذخیره مولد
+          </button>
         </div>
       </Card>
     </div>
   );
-                  }
+      }
