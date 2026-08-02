@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -7,12 +7,12 @@ import {
   ChevronLeft, FileDown,
 } from "lucide-react";
 import { Card, Pill, SectionEyebrow, Field, EmptyHint, inputCls } from "./ui.jsx";
-import { GOALS, TRAIT_META, ageInMonths, fmt, speciesLabel } from "../lib/constants.js";
-import { kinshipCoefficient, pairingScore, simulateGenerations } from "../lib/genetics.js";
+import { GOAL_GROUPS, ALL_GOALS, TRAIT_META, ageInMonths, fmt, speciesLabel } from "../lib/constants.js";
+import { kinshipCoefficient, pairingScore, simulateGenerations, fieldWeightsFromGoals } from "../lib/genetics.js";
 
 /* ---------------- Dashboard ---------------- */
 
-export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }) {
+export function DashboardTab({ breeders, selectionScores, goalWeights, byId, alerts }) {
   const sorted = [...breeders].sort((a, b) => (selectionScores.get(b.id) || 0) - (selectionScores.get(a.id) || 0));
   const top = sorted.slice(0, 5);
   const bottom = sorted.slice(-5).reverse();
@@ -23,7 +23,7 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
     males.forEach((m) => females.forEach((f) => { sum += kinshipCoefficient(m.id, f.id, byId); count++; }));
     return count ? sum / count : 0;
   }, [breeders, byId]);
-  const goal = GOALS.find((g) => g.id === goalId);
+  const activeGoals = Object.entries(goalWeights || {}).filter(([, w]) => Number(w) > 0);
   const trendData = useMemo(() => {
     const map = new Map();
     breeders.forEach((b) => (b.weightHistory || []).forEach((h) => {
@@ -41,7 +41,15 @@ export function DashboardTab({ breeders, selectionScores, goalId, byId, alerts }
       <header>
         <SectionEyebrow>DASHBOARD · نمای کلی</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">داشبورد ژنتیکی گله</h1>
-        <p className="text-[#9DB4C7] text-sm mt-1">هدف اصلاح نژاد فعال: {goal?.icon} {goal?.label}</p>
+        <div className="text-[#9DB4C7] text-sm mt-1 flex flex-wrap gap-x-2 gap-y-1">
+          <span>اهداف اصلاح نژاد فعال:</span>
+          {activeGoals.length === 0 && <span className="text-[#56707F]">تعیین نشده</span>}
+          {activeGoals.map(([gid, w]) => {
+            const g = ALL_GOALS.find((x) => x.id === gid);
+            if (!g) return null;
+            return <Pill key={gid} tone="accent">{g.icon} {g.label} ({w}٪)</Pill>;
+          })}
+        </div>
       </header>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard label="تعداد مولدها" value={breeders.length} />
@@ -237,10 +245,10 @@ function TreeLevel({ nodes }) {
 
 /* ---------------- Pairing ---------------- */
 
-export function PairingTab({ males, females, byId, goalId, pairSel, setPairSel }) {
+export function PairingTab({ males, females, byId, goalWeights, pairSel, setPairSel }) {
   const sire = byId.get(pairSel.sireId);
   const dam = byId.get(pairSel.damId);
-  const score = sire && dam ? pairingScore(sire, dam, byId, goalId) : null;
+  const score = sire && dam ? pairingScore(sire, dam, byId, goalWeights) : null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -301,16 +309,22 @@ function ScoreCard({ icon, label, value, tone }) {
 
 /* ---------------- Simulation ---------------- */
 
-export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSel }) {
+export function SimulationTab({ males, females, byId, goalWeights, pairSel, setPairSel }) {
   const sire = byId.get(pairSel.sireId);
   const dam = byId.get(pairSel.damId);
-  const sim = sire && dam ? simulateGenerations(sire, dam, byId, goalId, 5) : null;
-  const goal = GOALS.find((g) => g.id === goalId);
+  const sim = sire && dam ? simulateGenerations(sire, dam, byId, goalWeights, 5) : null;
+
+  const fieldWeights = fieldWeightsFromGoals(goalWeights);
+  const rankedFields = Object.keys(TRAIT_META).sort((a, b) => (fieldWeights[b] || 0) - (fieldWeights[a] || 0));
+  const defaultField = rankedFields.find((f) => (fieldWeights[f] || 0) > 0) || "weight";
+  const [focusField, setFocusField] = useState(defaultField);
+  const activeField = sim && sim[0].traits[focusField] ? focusField : rankedFields.find((f) => sim && sim[0].traits[f]) || "weight";
+
   const chartData = sim ? sim.map((row) => ({
     gen: `نسل ${row.gen}`,
-    value: row.traits[goal.field]?.mean ?? null,
-    low: row.traits[goal.field]?.low ?? null,
-    high: row.traits[goal.field]?.high ?? null,
+    value: row.traits[activeField]?.mean ?? null,
+    low: row.traits[activeField]?.low ?? null,
+    high: row.traits[activeField]?.high ?? null,
   })) : [];
 
   return (
@@ -337,8 +351,15 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
       {!sim && <EmptyHint text="یک جفت را برای مشاهده شبیه‌سازی انتخاب کنید." />}
       {sim && (
         <>
+          <Field label="نمایش نمودار برای صفت">
+            <select className={inputCls} value={activeField} onChange={(e) => setFocusField(e.target.value)}>
+              {Object.keys(TRAIT_META).filter((f) => sim[0].traits[f]).map((f) => (
+                <option key={f} value={f}>{TRAIT_META[f].label}{fieldWeights[f] > 0 ? ` — هدف (${Math.round(fieldWeights[f] * 100)}٪)` : ""}</option>
+              ))}
+            </select>
+          </Field>
           <Card className="p-5">
-            <SectionEyebrow>{goal.label.toUpperCase()} · روند برآوردی صفت هدف</SectionEyebrow>
+            <SectionEyebrow>{TRAIT_META[activeField].label.toUpperCase()} · روند برآوردی صفت</SectionEyebrow>
             <div className="h-56 mt-2">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
@@ -380,7 +401,7 @@ export function SimulationTab({ males, females, byId, goalId, pairSel, setPairSe
   );
 }
 
-/* ---------------- Alerts / Goal / AI ---------------- */
+/* ---------------- Alerts ---------------- */
 
 export function AlertsTab({ alerts }) {
   return (
@@ -402,27 +423,80 @@ export function AlertsTab({ alerts }) {
   );
 }
 
-export function GoalTab({ goalId, setGoalId }) {
+/* ---------------- Goal (multi-select + weights) ---------------- */
+
+export function GoalTab({ goalWeights, setGoalWeights }) {
+  const total = Object.values(goalWeights || {}).reduce((a, c) => a + (Number(c) || 0), 0);
+
+  function toggleGoal(goalId, checked) {
+    setGoalWeights((prev) => {
+      const next = { ...prev };
+      if (checked) {
+        if (!next[goalId]) next[goalId] = 20;
+      } else {
+        delete next[goalId];
+      }
+      return next;
+    });
+  }
+
+  function setWeight(goalId, val) {
+    setGoalWeights((prev) => ({ ...prev, [goalId]: Math.max(0, Math.min(100, Number(val) || 0)) }));
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <header>
-        <SectionEyebrow>BREEDING GOAL · هدف اصلاح نژاد</SectionEyebrow>
-        <h1 className="text-2xl font-extrabold">هدف اصلی برنامه اصلاح نژاد را انتخاب کنید</h1>
-        <p className="text-[#9DB4C7] text-sm mt-1">این انتخاب روی شاخص انتخاب، پیشنهادهای هوشمند و شبیه‌سازی نسل‌ها اثر می‌گذارد.</p>
+        <SectionEyebrow>BREEDING GOALS · اهداف اصلاح نژاد</SectionEyebrow>
+        <h1 className="text-2xl font-extrabold">اهداف برنامه اصلاح نژاد را انتخاب کنید</h1>
+        <p className="text-[#9DB4C7] text-sm mt-1">
+          می‌توانید چند هدف را هم‌زمان انتخاب کنید و برای هرکدام یک اهمیت (درصد) تعیین کنید. برنامه بر همین اساس
+          شاخص انتخاب، پیشنهادهای هوشمند و شبیه‌سازی نسل‌ها را محاسبه می‌کند.
+        </p>
+        <div className="mt-2">
+          <Pill tone={total > 0 ? "accent" : "default"}>مجموع اهمیت انتخاب‌شده: {total}٪</Pill>
+        </div>
       </header>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {GOALS.map((g) => (
-          <button
-            key={g.id}
-            onClick={() => setGoalId(g.id)}
-            className={`p-5 rounded-2xl border text-right transition-all ${goalId === g.id ? "bg-[#132A1C] border-[#6FA83E]" : "bg-[#13253A] border-[#1E3A54] hover:border-[#3A5B72]"}`}
-          >
-            <div className="text-2xl mb-2">{g.icon}</div>
-            <div className="font-bold text-sm">{g.label}</div>
-            {goalId === g.id && <div className="flex items-center gap-1 text-[11px] text-[#6FA83E] mt-2"><Check size={12} /> هدف فعال</div>}
-          </button>
-        ))}
-      </div>
+
+      {GOAL_GROUPS.map((group) => (
+        <div key={group.id} className="flex flex-col gap-3">
+          <div className="text-sm font-bold flex items-center gap-2">
+            <span>{group.icon}</span> {group.label}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {group.goals.map((g) => {
+              const checked = goalWeights && goalWeights[g.id] !== undefined;
+              const weight = goalWeights?.[g.id] ?? 0;
+              return (
+                <Card key={g.id} className={`p-3.5 flex items-center gap-3 ${checked ? "border-[#6FA83E]" : ""}`}>
+                  <button
+                    onClick={() => toggleGoal(g.id, !checked)}
+                    className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center text-lg ${checked ? "bg-[#132A1C] border border-[#6FA83E]" : "bg-[#0E2033] border border-[#24425E]"}`}
+                  >
+                    {g.icon}
+                  </button>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium truncate">{g.label}</div>
+                  </div>
+                  {checked && (
+                    <div className="flex items-center gap-1 shrink-0">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={weight}
+                        onChange={(e) => setWeight(g.id, e.target.value)}
+                        className="w-14 bg-[#0E2033] border border-[#24425E] rounded-lg px-2 py-1 text-sm text-center outline-none focus:border-[#6FA83E]"
+                      />
+                      <span className="text-xs text-[#7189A0]">٪</span>
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
@@ -433,7 +507,7 @@ export function AiTab({ suggestions, breedersCount }) {
       <header>
         <SectionEyebrow>AI ADVISOR · پیشنهاد هوشمند</SectionEyebrow>
         <h1 className="text-2xl font-extrabold">پیشنهادهای اصلاح نژاد</h1>
-        <p className="text-[#9DB4C7] text-sm mt-1">بر اساس رکوردهای ثبت‌شده و هدف اصلاح نژاد فعلی تولید می‌شود.</p>
+        <p className="text-[#9DB4C7] text-sm mt-1">بر اساس رکوردهای ثبت‌شده و اهداف اصلاح نژاد فعلی تولید می‌شود.</p>
       </header>
       {breedersCount < 4 && <EmptyHint text="برای دریافت پیشنهاد، حداقل ۴ مولد با رکورد کامل ثبت کنید." />}
       <div className="flex flex-col gap-2">
@@ -450,8 +524,8 @@ export function AiTab({ suggestions, breedersCount }) {
 
 /* ---------------- Report ---------------- */
 
-export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScores, goalId, exportExcel }) {
-  const goal = GOALS.find((g) => g.id === goalId);
+export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScores, goalWeights, exportExcel }) {
+  const activeGoals = Object.entries(goalWeights || {}).filter(([, w]) => Number(w) > 0);
   return (
     <div className="flex flex-col gap-5">
       <header className="no-print flex items-center justify-between flex-wrap gap-3">
@@ -470,7 +544,13 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
       </header>
       <Card className="p-6 print:border-none">
         <h2 className="text-xl font-extrabold mb-1">گزارش ژنتیکی گله</h2>
-        <p className="text-[#9DB4C7] text-sm mb-4">هدف اصلاح نژاد: {goal?.label} · تاریخ گزارش: {new Date().toLocaleDateString("fa-IR")}</p>
+        <p className="text-[#9DB4C7] text-sm mb-4">
+          اهداف اصلاح نژاد: {activeGoals.length === 0 ? "تعیین نشده" : activeGoals.map(([gid, w]) => {
+            const g = ALL_GOALS.find((x) => x.id === gid);
+            return g ? `${g.label} (${w}٪)` : null;
+          }).filter(Boolean).join("، ")}
+          {" "}· تاریخ گزارش: {new Date().toLocaleDateString("fa-IR")}
+        </p>
         <SectionEyebrow>مولدها</SectionEyebrow>
         <table className="w-full text-[12px] my-2 border-collapse">
           <thead>
@@ -506,4 +586,4 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
       </Card>
     </div>
   );
-  }
+    }
