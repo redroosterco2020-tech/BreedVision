@@ -1,5 +1,9 @@
 export const SPECIES = [
-  { id: "poultry", label: "طیور (مرغ و خروس)" },
+  { id: "poultry_chicken", label: "طیور — مرغ و خروس" },
+  { id: "poultry_turkey", label: "طیور — بوقلمون" },
+  { id: "poultry_quail", label: "طیور — بلدرچین" },
+  { id: "poultry_goose", label: "طیور — غاز" },
+  { id: "poultry_duck", label: "طیور — اردک" },
   { id: "light_livestock", label: "دام سبک (گوسفند / بز)" },
   { id: "heavy_livestock", label: "دام سنگین (گاو / گاومیش / شتر)" },
 ];
@@ -26,7 +30,7 @@ export const emptyBreeder = () => ({
   id: "",
   tag: "",
   name: "",
-  species: "poultry",
+  species: "poultry_chicken",
   sex: "female",
   breed: "",
   birthDate: "",
@@ -65,4 +69,4 @@ export function ageInMonths(birthDate) {
 export function fmt(n, digits = 2) {
   if (n === null || n === undefined || n === "" || isNaN(n)) return "—";
   return Number(n).toLocaleString("fa-IR", { maximumFractionDigits: digits });
-    }
+   }
