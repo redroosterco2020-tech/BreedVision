@@ -1,3 +1,21 @@
+export const ACTIVITY_TYPES = [
+  { id: "light_livestock", label: "دام سبک" },
+  { id: "heavy_livestock", label: "دام سنگین" },
+  { id: "poultry", label: "طیور" },
+  { id: "mixed", label: "ترکیبی" },
+];
+
+export function emptyProfile() {
+  return {
+    fullName: "",
+    farmName: "",
+    phone: "",
+    country: "",
+    province: "",
+    activityType: "",
+  };
+}
+
 export const SPECIES = [
   { id: "poultry_chicken", label: "طیور — مرغ و خروس" },
   { id: "poultry_turkey", label: "طیور — بوقلمون" },
@@ -118,4 +136,4 @@ export function ageInMonths(birthDate) {
 export function fmt(n, digits = 2) {
   if (n === null || n === undefined || n === "" || isNaN(n)) return "—";
   return Number(n).toLocaleString("fa-IR", { maximumFractionDigits: digits });
-  }
+        }
