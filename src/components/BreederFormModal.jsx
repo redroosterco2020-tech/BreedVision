@@ -26,7 +26,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
       <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">{breeder.id ? "ویرایش مولد" : "افزودن مولد جدید"}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[#1B3349]">
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-[var(--hover-bg)]">
             <X size={18} />
           </button>
         </div>
@@ -120,13 +120,13 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
         </div>
 
         <div className="mt-5">
-          <div className="text-[#6FA83E] text-[11px] tracking-[0.2em] font-semibold mb-1">WEIGHT LOG · تاریخچه وزن</div>
+          <div className="text-[var(--accent)] text-[11px] tracking-[0.2em] font-semibold mb-1">WEIGHT LOG · تاریخچه وزن</div>
           <div className="flex flex-col sm:flex-row gap-2 mt-2">
             <div className="flex-[1.4]">
               <JalaliDateInput value={newWeightDate} onChange={setNewWeightDate} />
             </div>
             <input type="number" step="0.01" placeholder="وزن (kg)" className={`${inputCls} flex-1`} value={newWeightVal} onChange={(e) => setNewWeightVal(e.target.value)} />
-            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[#1B3349] text-[#6FA83E] text-sm shrink-0">افزودن</button>
+            <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[var(--hover-bg)] text-[var(--accent)] text-sm shrink-0">افزودن</button>
           </div>
           {(form.weightHistory || []).length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -142,13 +142,13 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
         </Field>
 
         {errorMsg && (
-          <div className="mt-4 bg-[#3A1F1B] border border-[#5A3128] text-[#E88A7A] text-sm rounded-lg px-3 py-2">
+          <div className="mt-4 bg-[var(--bad-bg)] border border-[var(--bad-border)] text-[var(--bad-text)] text-sm rounded-lg px-3 py-2">
             {errorMsg}
           </div>
         )}
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-[#9DB4C7] hover:bg-[#1B3349]">انصراف</button>
+          <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]">انصراف</button>
           <button
             onClick={() => {
               if (!form.tag && !form.name) {
@@ -158,7 +158,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
               setErrorMsg("");
               onSave(form);
             }}
-            className="px-4 py-2 rounded-xl text-sm bg-[#6FA83E] text-[#0A1622] font-bold"
+            className="px-4 py-2 rounded-xl text-sm bg-[var(--accent)] text-[var(--on-accent)] font-bold"
           >
             ذخیره مولد
           </button>
@@ -166,4 +166,4 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
       </Card>
     </div>
   );
-      }
+  }
