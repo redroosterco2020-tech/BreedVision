@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from "react";
 import {
   PawPrint, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
-  LayoutDashboard, FileDown, Dna, LogOut, Menu, X, UserCircle,
+  LayoutDashboard, FileDown, Dna, LogOut, Menu, X, UserCircle, Sun, Moon,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import { useFlockData } from "../lib/useFlockData.js";
 import { emptyBreeder, uid, ageInMonths, SPECIES, ALL_GOALS } from "../lib/constants.js";
 import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
@@ -32,6 +33,9 @@ const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
 export default function AppShell() {
   const { user, logout } = useAuth();
+  const { mode, setMode } = useTheme();
+  const isLight = mode === "light" || (mode === "auto" && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches);
+  function toggleQuickTheme() { setMode(isLight ? "dark" : "light"); }
   const { breeders, goalWeights, profile, loaded, updateBreeders, updateGoalWeights, updateProfile, saveError, saving } = useFlockData(user?.uid);
   const [tab, setTab] = useState("dashboard");
   const [editing, setEditing] = useState(null);
@@ -99,47 +103,52 @@ export default function AppShell() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen bg-[#0D1B2A] text-[#E7EEF4] flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text-primary)] flex items-center justify-center">
         در حال بارگذاری...
       </div>
     );
   }
 
   return (
-    <div dir="rtl" className="min-h-screen w-full bg-[#0D1B2A] text-[#E7EEF4]">
+    <div dir="rtl" className="min-h-screen w-full bg-[var(--bg)] text-[var(--text-primary)]">
       {saveError && (
-        <div className="no-print fixed top-0 inset-x-0 z-50 bg-[#3A1F1B] border-b border-[#5A3128] text-[#E88A7A] text-xs px-4 py-2 text-center">
+        <div className="no-print fixed top-0 inset-x-0 z-50 bg-[var(--bad-bg)] border-b border-[var(--bad-border)] text-[var(--bad-text)] text-xs px-4 py-2 text-center">
           {saveError}
         </div>
       )}
       {/* Mobile top bar */}
-      <header className="no-print md:hidden sticky top-0 z-30 flex items-center justify-between bg-[#0A1622] border-b border-[#1B3349] px-4 py-3">
+      <header className="no-print md:hidden sticky top-0 z-30 flex items-center justify-between bg-[var(--bg-elevated)] border-b border-[var(--hover-bg)] px-4 py-3">
         <div className="flex items-center gap-2">
           <img src="/icons/icon-192.png" alt="BreedVision" className="w-8 h-8 rounded-xl object-cover" />
           <div>
             <div className="font-extrabold text-sm leading-none">BreedVision</div>
-            <div className="text-[10px] text-[#7189A0] mono mt-0.5">{activeNav?.label}</div>
+            <div className="text-[10px] text-[var(--text-tertiary)] mono mt-0.5">{activeNav?.label}</div>
           </div>
         </div>
-        <button onClick={() => setMenuOpen(true)} className="p-2 rounded-lg hover:bg-[#1B3349] text-[#E7EEF4]">
-          <Menu size={22} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button onClick={toggleQuickTheme} className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-primary)]">
+            {isLight ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          <button onClick={() => setMenuOpen(true)} className="p-2 rounded-lg hover:bg-[var(--hover-bg)] text-[var(--text-primary)]">
+            <Menu size={22} />
+          </button>
+        </div>
       </header>
 
       {/* Mobile overlay */}
       {menuOpen && (
         <div className="no-print fixed inset-0 z-40 md:hidden">
           <div className="absolute inset-0 bg-black/60" onClick={() => setMenuOpen(false)} />
-          <aside className="absolute top-0 right-0 h-full w-[78%] max-w-[300px] bg-[#0A1622] border-l border-[#1B3349] flex flex-col py-5 px-3 gap-1 overflow-y-auto">
+          <aside className="absolute top-0 right-0 h-full w-[78%] max-w-[300px] bg-[var(--bg-elevated)] border-l border-[var(--hover-bg)] flex flex-col py-5 px-3 gap-1 overflow-y-auto">
             <div className="flex items-center justify-between px-2 mb-4">
               <div className="flex items-center gap-2.5">
                 <img src="/icons/icon-192.png" alt="BreedVision" className="w-9 h-9 rounded-xl object-cover" />
                 <div>
                   <div className="font-extrabold text-[15px] leading-none">BreedVision</div>
-                  <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
+                  <div className="text-[10px] text-[var(--text-tertiary)] mono tracking-wider mt-1">GENETICS · v1.0</div>
                 </div>
               </div>
-              <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg hover:bg-[#1B3349]">
+              <button onClick={() => setMenuOpen(false)} className="p-1.5 rounded-lg hover:bg-[var(--hover-bg)]">
                 <X size={18} />
               </button>
             </div>
@@ -148,17 +157,17 @@ export default function AppShell() {
               const active = tab === n.id;
               return (
                 <button key={n.id} onClick={() => selectTab(n.id)}
-                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[#1B3349] text-[#6FA83E] font-semibold" : "text-[#B7C9D6] hover:bg-[#13253A]"}`}>
+                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[var(--hover-bg)] text-[var(--accent)] font-semibold" : "text-[var(--text-detail)] hover:bg-[var(--card-bg)]"}`}>
                   <Icon size={16} />{n.label}
                 </button>
               );
             })}
             <div className="mt-auto flex flex-col gap-2 pt-3">
-              <div className="px-3 text-[10px] text-[#56707F] leading-5">
+              <div className="px-3 text-[10px] text-[var(--text-quaternary)] leading-5">
                 {user?.email}
                 <br />{breeders.length} مولد ثبت‌شده
               </div>
-              <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#E88A7A] hover:bg-[#3A1F1B]">
+              <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[var(--bad-text)] hover:bg-[var(--bad-bg)]">
                 <LogOut size={16} /> خروج از حساب
               </button>
             </div>
@@ -168,12 +177,12 @@ export default function AppShell() {
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar */}
-        <aside className="no-print hidden md:flex w-[220px] shrink-0 bg-[#0A1622] border-l border-[#1B3349] flex-col py-6 px-3 gap-1">
+        <aside className="no-print hidden md:flex w-[220px] shrink-0 bg-[var(--bg-elevated)] border-l border-[var(--hover-bg)] flex-col py-6 px-3 gap-1">
           <div className="flex items-center gap-2 px-3 mb-6">
             <img src="/icons/icon-192.png" alt="BreedVision" className="w-9 h-9 rounded-xl object-cover" />
             <div>
               <div className="font-extrabold text-[15px] leading-none">BreedVision</div>
-              <div className="text-[10px] text-[#7189A0] mono tracking-wider mt-1">GENETICS · v1.0</div>
+              <div className="text-[10px] text-[var(--text-tertiary)] mono tracking-wider mt-1">GENETICS · v1.0</div>
             </div>
           </div>
           {NAV.map((n) => {
@@ -181,17 +190,20 @@ export default function AppShell() {
             const active = tab === n.id;
             return (
               <button key={n.id} onClick={() => setTab(n.id)}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[#1B3349] text-[#6FA83E] font-semibold" : "text-[#B7C9D6] hover:bg-[#13253A]"}`}>
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-colors text-right ${active ? "bg-[var(--hover-bg)] text-[var(--accent)] font-semibold" : "text-[var(--text-detail)] hover:bg-[var(--card-bg)]"}`}>
                 <Icon size={16} />{n.label}
               </button>
             );
           })}
           <div className="mt-auto flex flex-col gap-2">
-            <div className="px-3 text-[10px] text-[#56707F] leading-5">
+            <div className="px-3 text-[10px] text-[var(--text-quaternary)] leading-5">
               {user?.email}
               <br />{breeders.length} مولد ثبت‌شده
             </div>
-            <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#E88A7A] hover:bg-[#3A1F1B]">
+            <button onClick={toggleQuickTheme} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[var(--text-secondary)] hover:bg-[var(--hover-bg)]">
+              {isLight ? <Moon size={16} /> : <Sun size={16} />} {isLight ? "حالت تیره" : "حالت روشن"}
+            </button>
+            <button onClick={logout} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[var(--bad-text)] hover:bg-[var(--bad-bg)]">
               <LogOut size={16} /> خروج از حساب
             </button>
           </div>
@@ -220,4 +232,4 @@ export default function AppShell() {
       )}
     </div>
   );
-  }
+    }
