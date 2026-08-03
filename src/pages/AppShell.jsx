@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import {
   PawPrint, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
-  LayoutDashboard, FileDown, Dna, LogOut, Menu, X,
+  LayoutDashboard, FileDown, Dna, LogOut, Menu, X, UserCircle,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -9,6 +9,7 @@ import { useFlockData } from "../lib/useFlockData.js";
 import { emptyBreeder, uid, ageInMonths, SPECIES, ALL_GOALS } from "../lib/constants.js";
 import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
+import ProfileTab from "../components/ProfileTab.jsx";
 import {
   DashboardTab, BreedersTab, PedigreeTab, PairingTab, SimulationTab,
   AlertsTab, GoalTab, AiTab, ReportTab,
@@ -24,13 +25,14 @@ const NAV = [
   { id: "goal", label: "اهداف اصلاح نژاد", icon: Target },
   { id: "ai", label: "پیشنهاد هوشمند", icon: Sparkles },
   { id: "report", label: "گزارش", icon: FileDown },
+  { id: "profile", label: "پروفایل", icon: UserCircle },
 ];
 
 const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
 export default function AppShell() {
   const { user, logout } = useAuth();
-  const { breeders, goalWeights, loaded, updateBreeders, updateGoalWeights, saveError, saving } = useFlockData(user?.uid);
+  const { breeders, goalWeights, profile, loaded, updateBreeders, updateGoalWeights, updateProfile, saveError, saving } = useFlockData(user?.uid);
   const [tab, setTab] = useState("dashboard");
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
@@ -209,6 +211,7 @@ export default function AppShell() {
           {tab === "report" && (
             <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalWeights={goalWeights} exportExcel={exportExcel} />
           )}
+          {tab === "profile" && <ProfileTab profile={profile} updateProfile={updateProfile} />}
         </main>
       </div>
 
@@ -217,4 +220,4 @@ export default function AppShell() {
       )}
     </div>
   );
-      }
+  }
