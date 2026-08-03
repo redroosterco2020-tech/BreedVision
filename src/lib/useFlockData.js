@@ -1,12 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { DEFAULT_GOAL_WEIGHTS } from "./constants.js";
+import { DEFAULT_GOAL_WEIGHTS, emptyProfile } from "./constants.js";
 
-// Stores each user's flock under: flocks/{uid}  -> { breeders: [...], goalWeights: {...} }
+// Stores each user's flock under: flocks/{uid}  -> { breeders, goalWeights, profile }
 export function useFlockData(uid) {
   const [breeders, setBreeders] = useState([]);
   const [goalWeights, setGoalWeights] = useState(DEFAULT_GOAL_WEIGHTS);
+  const [profile, setProfile] = useState(emptyProfile());
   const [loaded, setLoaded] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -22,6 +23,7 @@ export function useFlockData(uid) {
           const data = snap.data();
           setBreeders(data.breeders || []);
           setGoalWeights(data.goalWeights || DEFAULT_GOAL_WEIGHTS);
+          setProfile({ ...emptyProfile(), ...(data.profile || {}) });
         }
       } catch (e) {
         console.error("load failed", e);
@@ -33,7 +35,7 @@ export function useFlockData(uid) {
   }, [uid]);
 
   const persist = useCallback(
-    (nextBreeders, nextGoalWeights) => {
+    (nextBreeders, nextGoalWeights, nextProfile) => {
       if (!uid) return;
       clearTimeout(saveTimer.current);
       saveTimer.current = setTimeout(async () => {
@@ -42,6 +44,7 @@ export function useFlockData(uid) {
           await setDoc(doc(db, "flocks", uid), {
             breeders: nextBreeders,
             goalWeights: nextGoalWeights,
+            profile: nextProfile,
             updatedAt: new Date().toISOString(),
           });
           setSaveError("");
@@ -60,23 +63,38 @@ export function useFlockData(uid) {
     (updater) => {
       setBreeders((prev) => {
         const next = typeof updater === "function" ? updater(prev) : updater;
-        persist(next, goalWeights);
+        persist(next, goalWeights, profile);
         return next;
       });
     },
-    [goalWeights, persist]
+    [goalWeights, profile, persist]
   );
 
   const updateGoalWeights = useCallback(
     (updater) => {
       setGoalWeights((prev) => {
         const next = typeof updater === "function" ? updater(prev) : updater;
-        persist(breeders, next);
+        persist(breeders, next, profile);
         return next;
       });
     },
-    [breeders, persist]
+    [breeders, profile, persist]
   );
 
-  return { breeders, goalWeights, loaded, updateBreeders, updateGoalWeights, saveError, saving };
-          }
+  const updateProfile = useCallback(
+    (updater) => {
+      setProfile((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        persist(breeders, goalWeights, next);
+        return next;
+      });
+    },
+    [breeders, goalWeights, persist]
+  );
+
+  return {
+    breeders, goalWeights, profile, loaded,
+    updateBreeders, updateGoalWeights, updateProfile,
+    saveError, saving,
+  };
+      }
