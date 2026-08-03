@@ -5,10 +5,81 @@
 
 * { font-family: 'Vazirmatn', sans-serif; }
 .mono { font-family: 'IBM Plex Mono', monospace; }
-body { background: #0D1B2A; }
+
+:root {
+  --bg: #0D1B2A;
+  --bg-elevated: #0A1622;
+  --card-bg: #13253A;
+  --card-border: #1E3A54;
+  --hover-bg: #1B3349;
+  --pill-border: #2C4C68;
+  --input-bg: #0E2033;
+  --input-border: #24425E;
+  --divider: #142538;
+  --neutral-border: #3A5B72;
+  --text-primary: #E7EEF4;
+  --text-secondary: #9DB4C7;
+  --text-tertiary: #7189A0;
+  --text-quaternary: #56707F;
+  --text-detail: #B7C9D6;
+  --pill-text: #D3E3EE;
+  --accent: #6FA83E;
+  --accent-border: #3F6B24;
+  --accent-bg: #16321F;
+  --on-accent: #0A1622;
+  --male-bg: #16283D;
+  --male-text: #7FB3E8;
+  --male-border: #2C5478;
+  --good-bg: #1F3A2E;
+  --good-text: #7FD9A8;
+  --good-border: #2E5641;
+  --warn-bg: #3A2E17;
+  --warn-text: #E8B15D;
+  --warn-border: #5A4522;
+  --bad-bg: #3A1F1B;
+  --bad-text: #E88A7A;
+  --bad-border: #5A3128;
+}
+
+:root.light {
+  --bg: #F4F7F6;
+  --bg-elevated: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --card-border: #DCE6E2;
+  --hover-bg: #EAF1EE;
+  --pill-border: #C9D8D2;
+  --input-bg: #FFFFFF;
+  --input-border: #C9D8D2;
+  --divider: #E4ECE9;
+  --neutral-border: #AFC2BC;
+  --text-primary: #14263A;
+  --text-secondary: #48607A;
+  --text-tertiary: #5C7690;
+  --text-quaternary: #7A93A6;
+  --text-detail: #33506B;
+  --pill-text: #22405A;
+  --accent: #3F6B24;
+  --accent-border: #6FA83E;
+  --accent-bg: #E3F0DA;
+  --on-accent: #FFFFFF;
+  --male-bg: #E3EDF7;
+  --male-text: #1D4E78;
+  --male-border: #B7CFE3;
+  --good-bg: #E4F4E9;
+  --good-text: #1F6B3E;
+  --good-border: #BCE0C9;
+  --warn-bg: #FCF1DC;
+  --warn-text: #8A5D08;
+  --warn-border: #EEDBAA;
+  --bad-bg: #FBE7E4;
+  --bad-text: #B23A28;
+  --bad-border: #F0C4BB;
+}
+
+body { background: var(--bg); transition: background 0.15s ease; }
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-thumb { background: #24425E; border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: var(--input-border); border-radius: 8px; }
 @media print {
   .no-print { display: none !important; }
   body { background: white; }
-}
+    }
