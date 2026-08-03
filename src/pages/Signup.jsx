@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Loader2 } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { mapAuthError } from "./Login.jsx";
 
@@ -10,6 +10,7 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -56,14 +57,24 @@ export default function Signup() {
             onChange={(e) => setEmail(e.target.value)}
             className="bg-[#0E2033] border border-[#24425E] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#6FA83E] placeholder:text-[#56707F]"
           />
-          <input
-            type="password"
-            required
-            placeholder="رمز عبور (حداقل ۶ کاراکتر)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-[#0E2033] border border-[#24425E] rounded-lg px-3 py-2.5 text-sm outline-none focus:border-[#6FA83E] placeholder:text-[#56707F]"
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              minLength={6}
+              placeholder="رمز عبور (حداقل ۶ کاراکتر)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#0E2033] border border-[#24425E] rounded-lg px-3 py-2.5 pl-10 text-sm outline-none focus:border-[#6FA83E] placeholder:text-[#56707F]"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((s) => !s)}
+              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#7189A0] hover:text-[#E7EEF4]"
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
           {error && <div className="text-[#E88A7A] text-xs">{error}</div>}
           <button
             disabled={busy}
@@ -83,4 +94,4 @@ export default function Signup() {
       </div>
     </div>
   );
-                                                                     }
+                                                                                                 }
