@@ -102,10 +102,10 @@ export function pairingScore(sire, dam, byId, goalWeights) {
     const w = fieldWeights[field] || 0;
     if (w <= 0) return;
     const meta = TRAIT_META[field];
-    const sVal = Number(sire[field]);
-    const dVal = Number(dam[field]);
-    if (isNaN(sVal) || isNaN(dVal) || sire[field] === "" || dam[field] === "") return;
-    const avg = (sVal + dVal) / 2;
+    const sOk = sire[field] !== "" && sire[field] !== undefined && sire[field] !== null && !isNaN(Number(sire[field]));
+    const dOk = dam[field] !== "" && dam[field] !== undefined && dam[field] !== null && !isNaN(Number(dam[field]));
+    if (!sOk && !dOk) return;
+    const avg = sOk && dOk ? (Number(sire[field]) + Number(dam[field])) / 2 : dOk ? Number(dam[field]) : Number(sire[field]);
     const direction = meta.inverse ? -1 : 1;
     const contribution = 0.5 + Math.min(0.4, direction * (avg > 0 ? 0.05 : -0.05) + meta.h2 * 0.3);
     weightedSum += contribution * w;
@@ -131,9 +131,12 @@ export function simulateGenerations(sire, dam, byId, goalWeights, generations = 
   const results = [];
   let currentMeans = {};
   fields.forEach((f) => {
-    const s = Number(sire[f]);
-    const d = Number(dam[f]);
-    currentMeans[f] = !isNaN(s) && !isNaN(d) && sire[f] !== "" && dam[f] !== "" ? (s + d) / 2 : null;
+    const sOk = sire[f] !== "" && sire[f] !== undefined && sire[f] !== null && !isNaN(Number(sire[f]));
+    const dOk = dam[f] !== "" && dam[f] !== undefined && dam[f] !== null && !isNaN(Number(dam[f]));
+    if (sOk && dOk) currentMeans[f] = (Number(sire[f]) + Number(dam[f])) / 2;
+    else if (dOk) currentMeans[f] = Number(dam[f]); // e.g. egg/milk production: only the dam expresses it
+    else if (sOk) currentMeans[f] = Number(sire[f]);
+    else currentMeans[f] = null;
   });
   let inbreeding = baseF;
   for (let g = 1; g <= generations; g++) {
@@ -240,4 +243,4 @@ export function computeAiSuggestions(breeders, selectionScores, byId, goalWeight
     });
   });
   return out.slice(0, 12);
-      }
+    }
