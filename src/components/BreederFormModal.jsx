@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Card, Field, Pill, inputCls } from "./ui.jsx";
 import JalaliDateInput from "./JalaliDateInput.jsx";
+import NumericInput from "./NumericInput.jsx";
 import { formatJalali } from "../lib/jalali.js";
 import { SPECIES } from "../lib/constants.js";
 
@@ -58,7 +59,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
             <JalaliDateInput value={form.birthDate} onChange={(v) => set("birthDate", v)} />
           </Field>
           <Field label="وزن فعلی (kg)">
-            <input type="number" step="0.01" className={inputCls} value={form.weight} onChange={(e) => set("weight", e.target.value)} />
+            <NumericInput className={inputCls} value={form.weight} onChange={(v) => set("weight", v)} />
           </Field>
           <Field label="پدر">
             <select className={inputCls} value={form.sireId} onChange={(e) => set("sireId", e.target.value)}>
@@ -77,34 +78,34 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
             </select>
           </Field>
           <Field label="تولید شیر (لیتر/روز)">
-            <input type="number" step="0.1" className={inputCls} value={form.milkProduction} onChange={(e) => set("milkProduction", e.target.value)} />
+            <NumericInput className={inputCls} value={form.milkProduction} onChange={(v) => set("milkProduction", v)} />
           </Field>
           <Field label="کیفیت گوشت و لاشه (۱ تا ۱۰)">
-            <input type="number" min="1" max="10" className={inputCls} value={form.meatQuality} onChange={(e) => set("meatQuality", e.target.value)} />
+            <NumericInput allowDecimal={false} min={1} max={10} className={inputCls} value={form.meatQuality} onChange={(v) => set("meatQuality", v)} />
           </Field>
           <Field label="تولید تخم (فرد در سال)">
-            <input type="number" className={inputCls} value={form.eggProduction} onChange={(e) => set("eggProduction", e.target.value)} />
+            <NumericInput allowDecimal={false} className={inputCls} value={form.eggProduction} onChange={(v) => set("eggProduction", v)} />
           </Field>
           <Field label="درصد هچ">
-            <input type="number" className={inputCls} value={form.hatchPercent} onChange={(e) => set("hatchPercent", e.target.value)} />
+            <NumericInput allowDecimal={false} min={0} max={100} className={inputCls} value={form.hatchPercent} onChange={(v) => set("hatchPercent", v)} />
           </Field>
           <Field label="FCR">
-            <input type="number" step="0.01" className={inputCls} value={form.fcr} onChange={(e) => set("fcr", e.target.value)} />
+            <NumericInput className={inputCls} value={form.fcr} onChange={(v) => set("fcr", v)} />
           </Field>
           <Field label="امتیاز مقاومت به بیماری (۱ تا ۱۰)">
-            <input type="number" min="1" max="10" className={inputCls} value={form.resistanceScore} onChange={(e) => set("resistanceScore", e.target.value)} />
+            <NumericInput allowDecimal={false} min={1} max={10} className={inputCls} value={form.resistanceScore} onChange={(v) => set("resistanceScore", v)} />
           </Field>
           <Field label="امتیاز باروری (۱ تا ۱۰)">
-            <input type="number" min="1" max="10" className={inputCls} value={form.fertilityScore} onChange={(e) => set("fertilityScore", e.target.value)} />
+            <NumericInput allowDecimal={false} min={1} max={10} className={inputCls} value={form.fertilityScore} onChange={(v) => set("fertilityScore", v)} />
           </Field>
           <Field label="نرخ زنده‌مانی نوزاد/جوجه (%)">
-            <input type="number" min="0" max="100" className={inputCls} value={form.survivalRate} onChange={(e) => set("survivalRate", e.target.value)} />
+            <NumericInput allowDecimal={false} min={0} max={100} className={inputCls} value={form.survivalRate} onChange={(v) => set("survivalRate", v)} />
           </Field>
           <Field label="طول عمر / دوره تولید (ماه)">
-            <input type="number" className={inputCls} value={form.productiveLifespanMonths} onChange={(e) => set("productiveLifespanMonths", e.target.value)} />
+            <NumericInput allowDecimal={false} className={inputCls} value={form.productiveLifespanMonths} onChange={(v) => set("productiveLifespanMonths", v)} />
           </Field>
           <Field label="سازگاری با آب‌وهوا (۱ تا ۱۰)">
-            <input type="number" min="1" max="10" className={inputCls} value={form.climateTolerance} onChange={(e) => set("climateTolerance", e.target.value)} />
+            <NumericInput allowDecimal={false} min={1} max={10} className={inputCls} value={form.climateTolerance} onChange={(v) => set("climateTolerance", v)} />
           </Field>
           <Field label="وضعیت تلفات">
             <select className={inputCls} value={form.mortality ? "yes" : "no"} onChange={(e) => set("mortality", e.target.value === "yes")}>
@@ -125,7 +126,7 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
             <div className="flex-[1.4]">
               <JalaliDateInput value={newWeightDate} onChange={setNewWeightDate} />
             </div>
-            <input type="number" step="0.01" placeholder="وزن (kg)" className={`${inputCls} flex-1`} value={newWeightVal} onChange={(e) => setNewWeightVal(e.target.value)} />
+            <NumericInput placeholder="وزن (kg)" className={`${inputCls} flex-1`} value={newWeightVal} onChange={setNewWeightVal} />
             <button onClick={addWeightPoint} className="px-3 rounded-lg bg-[var(--hover-bg)] text-[var(--accent)] text-sm shrink-0">افزودن</button>
           </div>
           {(form.weightHistory || []).length > 0 && (
@@ -166,4 +167,4 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
       </Card>
     </div>
   );
-  }
+            }
