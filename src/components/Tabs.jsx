@@ -7,6 +7,7 @@ import {
   ChevronLeft, FileDown,
 } from "lucide-react";
 import { Card, Pill, SectionEyebrow, Field, EmptyHint, inputCls } from "./ui.jsx";
+import NumericInput from "./NumericInput.jsx";
 import { GOAL_GROUPS, ALL_GOALS, TRAIT_META, ageInMonths, fmt, speciesLabel } from "../lib/constants.js";
 import { kinshipCoefficient, pairingScore, simulateGenerations, fieldWeightsFromGoals } from "../lib/genetics.js";
 
@@ -480,12 +481,12 @@ export function GoalTab({ goalWeights, setGoalWeights }) {
                   </div>
                   {checked && (
                     <div className="flex items-center gap-1 shrink-0">
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
+                      <NumericInput
+                        allowDecimal={false}
+                        min={0}
+                        max={100}
                         value={weight}
-                        onChange={(e) => setWeight(g.id, e.target.value)}
+                        onChange={(v) => setWeight(g.id, v)}
                         className="w-14 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg px-2 py-1 text-sm text-center outline-none focus:border-[var(--accent)]"
                       />
                       <span className="text-xs text-[var(--text-tertiary)]">٪</span>
@@ -586,4 +587,4 @@ export function ReportTab({ breeders, byId, alerts, aiSuggestions, selectionScor
       </Card>
     </div>
   );
-        }
+                         }
