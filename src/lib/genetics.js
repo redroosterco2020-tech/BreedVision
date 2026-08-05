@@ -243,4 +243,4 @@ export function computeAiSuggestions(breeders, selectionScores, byId, goalWeight
     });
   });
   return out.slice(0, 12);
-    }
+  }
