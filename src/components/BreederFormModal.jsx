@@ -77,15 +77,19 @@ export default function BreederFormModal({ breeder, breeders, onClose, onSave })
               ))}
             </select>
           </Field>
-          <Field label="تولید شیر (لیتر/روز)">
-            <NumericInput className={inputCls} value={form.milkProduction} onChange={(v) => set("milkProduction", v)} />
-          </Field>
+          {form.sex === "female" && (
+            <Field label="تولید شیر (لیتر/روز)">
+              <NumericInput className={inputCls} value={form.milkProduction} onChange={(v) => set("milkProduction", v)} />
+            </Field>
+          )}
           <Field label="کیفیت گوشت و لاشه (۱ تا ۱۰)">
             <NumericInput allowDecimal={false} min={1} max={10} className={inputCls} value={form.meatQuality} onChange={(v) => set("meatQuality", v)} />
           </Field>
-          <Field label="تولید تخم (فرد در سال)">
-            <NumericInput allowDecimal={false} className={inputCls} value={form.eggProduction} onChange={(v) => set("eggProduction", v)} />
-          </Field>
+          {form.sex === "female" && (
+            <Field label="تولید تخم (فرد در سال)">
+              <NumericInput allowDecimal={false} className={inputCls} value={form.eggProduction} onChange={(v) => set("eggProduction", v)} />
+            </Field>
+          )}
           <Field label="درصد هچ">
             <NumericInput allowDecimal={false} min={0} max={100} className={inputCls} value={form.hatchPercent} onChange={(v) => set("hatchPercent", v)} />
           </Field>
