@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore } from "firebase/firestore";
 
 // این مقادیر را از تنظیمات پروژه‌ی Firebase خودتان بردارید
 // Firebase Console > Project settings > General > Your apps > SDK setup and configuration
@@ -15,4 +15,12 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+
+// Long-polling instead of the default WebChannel/streaming connection.
+// This behaves more like a normal HTTPS request, which in practice gets
+// through some restrictive/filtered networks that block Google's usual
+// streaming connection — without needing a VPN.
+export const db = initializeFirestore(app, {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false,
+});
