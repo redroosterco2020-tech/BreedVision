@@ -243,4 +243,28 @@ export function computeAiSuggestions(breeders, selectionScores, byId, goalWeight
     });
   });
   return out.slice(0, 12);
-  }
+}
+
+// Returns the top N candidate sire×dam pairs ranked by overall pairing score.
+// Limits combinations to the top half of each sex by selection index (when
+// scores are provided) to keep this fast for larger flocks.
+export function topPairSuggestions(breeders, byId, goalWeights, selectionScores, topN = 3) {
+  const males = breeders.filter((b) => b.sex === "male");
+  const females = breeders.filter((b) => b.sex === "female");
+  const rank = (list) =>
+    selectionScores
+      ? [...list].sort((a, b) => (selectionScores.get(b.id) || 0) - (selectionScores.get(a.id) || 0))
+      : list;
+  const rankedMales = rank(males).slice(0, Math.max(3, Math.ceil(males.length / 2)));
+  const rankedFemales = rank(females).slice(0, Math.max(3, Math.ceil(females.length / 2)));
+
+  const results = [];
+  rankedMales.forEach((m) => {
+    rankedFemales.forEach((f) => {
+      const score = pairingScore(m, f, byId, goalWeights);
+      results.push({ sire: m, dam: f, score });
+    });
+  });
+  results.sort((a, b) => b.score.overall - a.score.overall);
+  return results.slice(0, topN);
+}
