@@ -25,4 +25,3 @@ export const BREED_DATABASE = [
 
 export function breedsForSpecies(speciesId) {
   return BREED_DATABASE.filter((b) => b.species === speciesId);
-    }
