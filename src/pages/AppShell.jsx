@@ -232,3 +232,5 @@ export default function AppShell() {
         <BreederFormModal breeder={editing} breeders={breeders} onClose={() => { setShowForm(false); setEditing(null); }} onSave={saveBreeder} />
       )}
     </div>
+  );
+   }
