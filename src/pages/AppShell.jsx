@@ -11,9 +11,10 @@ import { emptyBreeder, uid, ageInMonths, SPECIES, ALL_GOALS } from "../lib/const
 import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../lib/genetics.js";
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import ProfileTab from "../components/ProfileTab.jsx";
+import AIHub from "../components/AIHub.jsx";
 import {
   DashboardTab, BreedersTab, PedigreeTab, PairingTab, SimulationTab,
-  AlertsTab, GoalTab, AiTab, ReportTab,
+  AlertsTab, GoalTab, ReportTab,
 } from "../components/Tabs.jsx";
 
 const NAV = [
@@ -24,7 +25,7 @@ const NAV = [
   { id: "simulation", label: "شبیه‌سازی نسل‌ها", icon: FlaskConical },
   { id: "alerts", label: "هشدارها", icon: AlertTriangle },
   { id: "goal", label: "اهداف اصلاح نژاد", icon: Target },
-  { id: "ai", label: "پیشنهاد هوشمند", icon: Sparkles },
+  { id: "ai", label: "هوش مصنوعی", icon: Sparkles },
   { id: "report", label: "گزارش", icon: FileDown },
   { id: "profile", label: "پروفایل", icon: UserCircle },
 ];
@@ -219,7 +220,7 @@ export default function AppShell() {
           {tab === "simulation" && <SimulationTab males={males} females={females} byId={byId} goalWeights={goalWeights} pairSel={pairSel} setPairSel={setPairSel} />}
           {tab === "alerts" && <AlertsTab alerts={alerts} />}
           {tab === "goal" && <GoalTab goalWeights={goalWeights} setGoalWeights={updateGoalWeights} />}
-          {tab === "ai" && <AiTab suggestions={aiSuggestions} breedersCount={breeders.length} />}
+          {tab === "ai" && <AIHub breeders={breeders} byId={byId} selectionScores={selectionScores} goalWeights={goalWeights} alerts={alerts} aiSuggestions={aiSuggestions} />}
           {tab === "report" && (
             <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalWeights={goalWeights} exportExcel={exportExcel} />
           )}
@@ -231,5 +232,3 @@ export default function AppShell() {
         <BreederFormModal breeder={editing} breeders={breeders} onClose={() => { setShowForm(false); setEditing(null); }} onSave={saveBreeder} />
       )}
     </div>
-  );
-    }
