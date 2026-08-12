@@ -1,5 +1,3 @@
-// Static reference database of common breeds, grouped by species category.
-// Purely informational — no user data is tied to these entries.
 export const BREED_DATABASE = [
   { species: "poultry_chicken", name: "لگهورن سفید", origin: "ایتالیا", purpose: "تخم", notes: "تولید بالای تخم، وزن بدن کم، مقاومت متوسط." },
   { species: "poultry_chicken", name: "راس ۳۰۸", origin: "بین‌المللی", purpose: "گوشت", notes: "رشد بسیار سریع، FCR پایین، پرورش صنعتی." },
@@ -25,3 +23,4 @@ export const BREED_DATABASE = [
 
 export function breedsForSpecies(speciesId) {
   return BREED_DATABASE.filter((b) => b.species === speciesId);
+  }
