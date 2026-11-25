@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import {
   PawPrint, GitBranch, Sparkles, FlaskConical, AlertTriangle, Target,
-  LayoutDashboard, FileDown, Dna, LogOut, Menu, X, UserCircle, Sun, Moon,
+  LayoutDashboard, FileDown, Dna, LogOut, Menu, X, UserCircle, Sun, Moon,BookOpen,
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -12,6 +12,7 @@ import { computeSelectionIndex, computeAlerts, computeAiSuggestions } from "../l
 import BreederFormModal from "../components/BreederFormModal.jsx";
 import ProfileTab from "../components/ProfileTab.jsx";
 import AIHub from "../components/AIHub.jsx";
+import KnowledgeHub from "../components/KnowledgeHub.jsx";
 import {
   DashboardTab, BreedersTab, PedigreeTab, PairingTab, SimulationTab,
   AlertsTab, GoalTab, ReportTab,
@@ -28,7 +29,7 @@ const NAV = [
   { id: "ai", label: "هوش مصنوعی", icon: Sparkles },
   { id: "report", label: "گزارش", icon: FileDown },
   { id: "profile", label: "پروفایل", icon: UserCircle },
-];
+];  { id: "knowledge", label: "دانشنامه", icon: BookOpen },
 
 const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
@@ -221,7 +222,8 @@ export default function AppShell() {
           {tab === "alerts" && <AlertsTab alerts={alerts} />}
           {tab === "goal" && <GoalTab goalWeights={goalWeights} setGoalWeights={updateGoalWeights} />}
           {tab === "ai" && <AIHub breeders={breeders} byId={byId} selectionScores={selectionScores} goalWeights={goalWeights} alerts={alerts} aiSuggestions={aiSuggestions} />}
-          {tab === "report" && (
+          {tab === "report" && (        
+      {tab === "knowledge" && <KnowledgeHub />}
             <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalWeights={goalWeights} exportExcel={exportExcel} />
           )}
           {tab === "profile" && <ProfileTab profile={profile} updateProfile={updateProfile} />}
