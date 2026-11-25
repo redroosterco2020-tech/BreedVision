@@ -30,7 +30,7 @@ const NAV = [
   { id: "report", label: "گزارش", icon: FileDown },
   { id: "profile", label: "پروفایل", icon: UserCircle },
   { id: "knowledge", label: "دانشنامه", icon: BookOpen },
-];,
+];
 
 const SPECIES_MAP = Object.fromEntries(SPECIES.map((s) => [s.id, s.label]));
 
