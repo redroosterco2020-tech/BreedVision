@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Pills, Field, inputCls, Table } from "./knowledgeShared.jsx";
 import { PairPlanner, FlockStatus } from "./BreedingFlock.jsx";
+import { GoalHeritability } from "./BreedingGoals.jsx";
 
 const num = (v) => parseFloat(String(v).replace(",", "."));
 
@@ -90,18 +91,19 @@ function H2Table() {
 const TOOLS = [
   { id: "pair", label: "پیشنهاد جفت" },
   { id: "flock", label: "وضعیت گله" },
+    { id: "goals", label: "اهداف و وراثت‌پذیری" },
   { id: "resp", label: "پاسخ به انتخاب" },
   { id: "pop", label: "برنامه‌ریزی گله" },
   { id: "h2", label: "وراثت‌پذیری" },
 ];
-
-export default function BreedingTool({ breeders = [] }) {
+export default function BreedingTool({ breeders = [], goalWeights = {} }) {
   const [t, setT] = useState("pair");
   return (
     <div className="flex flex-col gap-3">
       <Pills items={TOOLS} value={t} onChange={setT} />
       {t === "pair" && <PairPlanner breeders={breeders} />}
       {t === "flock" && <FlockStatus breeders={breeders} />}
+            {t === "goals" && <GoalHeritability breeders={breeders} goalWeights={goalWeights} />}
       {t === "resp" && <Response />}
       {t === "pop" && <Pop />}
       {t === "h2" && <H2Table />}
