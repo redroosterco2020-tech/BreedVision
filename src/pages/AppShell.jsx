@@ -225,8 +225,7 @@ export default function AppShell() {
           {tab === "ai" && <AIHub breeders={breeders} byId={byId} selectionScores={selectionScores} goalWeights={goalWeights} alerts={alerts} aiSuggestions={aiSuggestions} />}
           {tab === "report" && (
   <ReportTab breeders={breeders} byId={byId} alerts={alerts} aiSuggestions={aiSuggestions} selectionScores={selectionScores} goalWeights={goalWeights} exportExcel={exportExcel} />
-)}
-{tab === "knowledge" && <KnowledgeHub />}
+)}{tab === "knowledge" && <KnowledgeHub breeders={breeders} />}
           {tab === "profile" && <ProfileTab profile={profile} updateProfile={updateProfile} />}
         </main>
       </div>
