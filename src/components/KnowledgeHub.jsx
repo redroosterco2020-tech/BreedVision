@@ -23,7 +23,7 @@ const SECTIONS = [
   { id: "glossary", label: "فرهنگ اصطلاحات", Comp: Glossary },
   { id: "atlas", label: "اطلس و کتابخانه", Comp: VisualAtlas },
 ];
-export default function KnowledgeHub({ breeders = [] }) {
+export default function KnowledgeHub({ breeders = [], goalWeights = {} }) {
   const [section, setSection] = useState("breeds");
   const active = SECTIONS.find((s) => s.id === section) || SECTIONS[0];
   const Comp = active.Comp;
@@ -54,8 +54,7 @@ export default function KnowledgeHub({ breeders = [] }) {
           </button>
         ))}
       </div>
-
-      <Comp breeders={breeders} />
+<Comp breeders={breeders} goalWeights={goalWeights} />
     </div>
   );
 }
