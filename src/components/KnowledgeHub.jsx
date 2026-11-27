@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import QuantIndex from "./QuantIndex.jsx";
 import QuantGenetics from "./QuantGenetics.jsx";
 import { SectionEyebrow } from "./ui.jsx";
 import BreedEncyclopedia from "./BreedEncyclopedia.jsx";
@@ -15,6 +16,7 @@ import CrossbreedingSimulator from "./CrossbreedingSimulator.jsx";
 const SECTIONS = [
   { id: "breeds", label: "نژادها", Comp: BreedEncyclopedia },
     { id: "quant", label: "ژنتیک کمی و EBV", Comp: QuantGenetics },
+    { id: "qindex", label: "شاخص انتخاب چندصفتی", Comp: QuantIndex },
     { id: "cross", label: "شبیه‌ساز تلاقی نژادها", Comp: CrossbreedingSimulator },
   { id: "chromo", label: "کروموزوم‌شناسی", Comp: ChromosomeEncyclopedia },
   { id: "bank", label: "بانک ژنتیک", Comp: GeneticBank },
