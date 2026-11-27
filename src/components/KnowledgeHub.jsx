@@ -10,9 +10,10 @@ import BreedingTool from "./BreedingTool.jsx";
 import ReproductionEncyclopedia from "./ReproductionEncyclopedia.jsx";
 import Glossary from "./Glossary.jsx";
 import VisualAtlas from "./VisualAtlas.jsx";
-
+import CrossbreedingSimulator from "./CrossbreedingSimulator.jsx";
 const SECTIONS = [
   { id: "breeds", label: "نژادها", Comp: BreedEncyclopedia },
+    { id: "cross", label: "شبیه‌ساز تلاقی نژادها", Comp: CrossbreedingSimulator },
   { id: "chromo", label: "کروموزوم‌شناسی", Comp: ChromosomeEncyclopedia },
   { id: "bank", label: "بانک ژنتیک", Comp: GeneticBank },
   { id: "calc", label: "ماشین‌حساب ژنتیک", Comp: GeneticCalculator },
