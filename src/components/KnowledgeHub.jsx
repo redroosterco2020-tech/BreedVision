@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PopSim from "./PopSim.jsx";
 import QuantIndex from "./QuantIndex.jsx";
 import QuantGenetics from "./QuantGenetics.jsx";
 import { SectionEyebrow } from "./ui.jsx";
@@ -17,6 +18,7 @@ const SECTIONS = [
   { id: "breeds", label: "نژادها", Comp: BreedEncyclopedia },
     { id: "quant", label: "ژنتیک کمی و EBV", Comp: QuantGenetics },
     { id: "qindex", label: "شاخص انتخاب چندصفتی", Comp: QuantIndex },
+    { id: "popsim", label: "شبیه‌سازی چندنسلی", Comp: PopSim },
     { id: "cross", label: "شبیه‌ساز تلاقی نژادها", Comp: CrossbreedingSimulator },
   { id: "chromo", label: "کروموزوم‌شناسی", Comp: ChromosomeEncyclopedia },
   { id: "bank", label: "بانک ژنتیک", Comp: GeneticBank },
